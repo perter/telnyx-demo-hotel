@@ -1,0 +1,35 @@
+{
+  "name": "telnyxhotel-voice-demo",
+  "version": "1.0.0",
+  "description": "TelnyxHotel: a multilingual AI voice receptionist demo built on Telnyx AI Assistants, Voice, Messaging, Email and Edge Compute.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/team-telnyx/telnyx-demo-hotel.git"
+  },
+  "homepage": "https://github.com/team-telnyx/telnyx-demo-hotel#readme",
+  "bugs": {
+    "url": "https://github.com/team-telnyx/telnyx-demo-hotel/issues"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "setup": "node scripts/setup.js",
+    "test": "node --test test/*.test.js",
+    "assistant:sync": "node scripts/sync-assistant.js",
+    "kb:sync": "node scripts/kb-sync.js",
+    "edge:build": "node scripts/edge-build.js",
+    "edge:ship": "node scripts/edge-build.js && bash scripts/edge.sh ship --from-dir=edge --timeout 25m",
+    "probe:live": "bash scripts/security-probe.sh",
+    "edge": "bash scripts/edge.sh"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "nodemailer": "^10.0.13",
+    "ws": "^8.16.0"
+  }
+}

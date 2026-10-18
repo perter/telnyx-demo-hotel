@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TelnyxHotel — How it works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="flow.css">
+</head>
+<body>
+  <header id="topbar"></header>
+  <div class="app">
+    <header class="bar">
+      <div class="bar-title">
+        <h1 data-i18n="flow.title">How it works</h1>
+        <p class="subtitle" data-i18n="flow.subtitle">Browser, your server, Telnyx and the guest: who does what, step by step</p>
+      </div>
+      <div class="bar-actions">
+        <span id="modePill" class="mode demo">▶ Demo</span>
+        <button id="modeBtn" class="ghost-btn" type="button" data-i18n="flow.pause">⏸ Pause demo</button>
+        <span class="lang-switch" id="langSwitch"></span>
+        <span class="mode-hint" id="modeHint"><span data-i18n="flow.hintPre">Start a call from the</span> <a href="/" target="_blank" rel="noopener" data-i18n="flow.hintLink">front desk</a> <span data-i18n="flow.hintPost">in another tab to watch the live flow.</span></span>
+      </div>
+    </header>
+
+    <nav class="steps" id="stepRail" data-i18n-attr="aria-label:flow.aria.steps" aria-label="Steps of the flow">
+      <button type="button" data-step="setup"><b>1</b> <span data-i18n="flow.step.setup">Login &amp; voice</span></button>
+      <button type="button" data-step="listen"><b>2</b> <span data-i18n="flow.step.listen">Listening</span></button>
+      <button type="button" data-step="transcribe"><b>3</b> <span data-i18n="flow.step.transcribe">Transcription</span></button>
+      <button type="button" data-step="think"><b>4</b> <span data-i18n="flow.step.think">Reasoning</span></button>
+      <button type="button" data-step="tools"><b>5</b> <span data-i18n="flow.step.tools">Page update</span></button>
+      <button type="button" data-step="speak"><b>6</b> <span data-i18n="flow.step.speak">Spoken reply</span></button>
+      <button type="button" data-step="email"><b>7</b> <span data-i18n="flow.step.email">E-mail</span></button>
+      <button type="button" data-step="sms"><b>8</b> <span data-i18n="flow.step.sms">SMS / WhatsApp</span></button>
+      <button type="button" data-step="record"><b>9</b> <span data-i18n="flow.step.record">Call history</span></button>
+      <button type="button" data-step="data"><b>10</b> <span data-i18n="flow.step.data">Availability</span></button>
+    </nav>
+
+    <main class="stage">
+      <section class="card diagram-card">
+        <div id="narration" class="narration" aria-live="polite">
+          <span id="narrTag" class="tag setup">setup</span>
+          <span id="narrText" data-i18n="flow.narrIdle">Pick a step above to see only what it involves, or let the demo play.</span>
+        </div>
+        <div class="diagram-wrap">
+          <svg id="diagram" viewBox="0 0 1140 700" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="dTitle dDesc">
+          <title id="dTitle" data-i18n="flow.aria.diagram">Architecture of a call</title>
+          <desc id="dDesc" data-i18n="flow.aria.diagramDesc">Four zones: the client (the guest's browser) with microphone, playback, chat, booking tools and reservation card; the demo server, which holds the API key, relays messages, calls the Telnyx REST APIs and sends the recap e-mail; the Telnyx cloud with speech-to-text, LLM and text-to-speech; and the external resources the server can query.</desc>
+          <defs>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0b1a1c" flood-opacity="0.18"/>
+            </filter>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/>
+            </marker>
+          </defs>
+
+          <!-- Zones -->
+          <rect class="zone client" x="14" y="56" width="330" height="620" rx="18"/>
+          <text class="zone-label client" x="32" y="82" data-i18n="flow.zone.client">CLIENT · guest's browser</text>
+          <text class="zone-sub" x="32" y="99" data-i18n="flow.zone.clientSub">index.html · reception.js · booking.js</text>
+          <g class="zbadge yours" transform="translate(232,64)"><rect width="100" height="17" rx="8.5"/><text x="50" y="12" text-anchor="middle" data-i18n="flow.badge.client">YOUR CODE</text></g>
+
+          <rect class="zone server" x="364" y="56" width="330" height="620" rx="18"/>
+          <text class="zone-label server" x="382" y="82" data-i18n="flow.zone.server">YOUR SERVER · server.js</text>
+          <text class="zone-sub" x="382" y="99" data-i18n="flow.zone.serverSub">Node.js or Telnyx Edge · holds the API key</text>
+          <g class="zbadge yours" transform="translate(582,64)"><rect width="100" height="17" rx="8.5"/><text x="50" y="12" text-anchor="middle" data-i18n="flow.badge.server">YOUR SERVER</text></g>
+
+          <rect class="zone telnyx" x="714" y="56" width="410" height="410" rx="18"/>
+          <text class="zone-label telnyx" x="732" y="82" data-i18n="flow.zone.telnyx">TELNYX CLOUD</text>
+          <text class="zone-sub" x="732" y="99" data-i18n="flow.zone.telnyxSub">AI Assistant · Email · Messaging · Storage</text>
+          <g class="zbadge telnyx" transform="translate(1030,64)"><rect width="76" height="17" rx="8.5"/><text x="38" y="12" text-anchor="middle" data-i18n="flow.badge.telnyx">TELNYX</text></g>
+
+          <rect class="zone external" x="714" y="486" width="410" height="190" rx="18"/>
+          <text class="zone-label external" x="732" y="512" data-i18n="flow.zone.external">THE GUEST AND YOUR SYSTEMS</text>
+          <text class="zone-sub" x="732" y="529" data-i18n="flow.zone.externalSub">reached by Telnyx or by the server, never by the browser</text>
+          <g class="zbadge third" transform="translate(1006,494)"><rect width="100" height="17" rx="8.5"/><text x="50" y="12" text-anchor="middle" data-i18n="flow.badge.external">OUTSIDE</text></g>
+
+          <!-- The single WebSocket: client ⇄ server ⇄ Telnyx -->
+          <path id="busCS" class="link ws" d="M324,134 H384" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+          <path id="busST" class="link ws" d="M674,134 H734" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+          <text class="link-label" x="354" y="186" text-anchor="middle">WebSocket</text>
+          <text class="link-label" x="704" y="186" text-anchor="middle">WebSocket</text>
+          <text class="link-label key" x="704" y="200" text-anchor="middle" data-i18n="flow.plusKey">+ key</text>
+
+          <!-- Video avatar: WebRTC straight between the browser and Telnyx -->
+          <path id="tAvatar" class="link avatar" d="M1114,296 H1132 V40 H24 V312 H84" marker-end="url(#arrow)"/>
+          <text class="link-label avatar" x="569" y="33" text-anchor="middle" data-i18n="flow.lbl.avatar">WebRTC · video avatar (beta): browser ⇄ Telnyx, no server in between</text>
+
+          <!-- Client spine -->
+          <path id="cMic" class="link audio-in" d="M54,164 V228 H84" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+          <path id="cSpk" class="link audio-out" d="M54,164 V296 H84" marker-end="url(#arrow)"/>
+          <path id="cChat" class="link text" d="M54,164 V369 H84" marker-end="url(#arrow)"/>
+          <path id="cTools" class="link tools" d="M54,164 V452 H84" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+          <path id="cCard" class="link ui" d="M204,490 V506" marker-end="url(#arrow)"/>
+          <text class="link-label ui" x="214" y="503" data-i18n="flow.lbl.updatesCard">updates the card</text>
+
+          <!-- Server spine -->
+          <path id="sAuth" class="link rest" d="M404,164 V204 H434" marker-end="url(#arrow)"/>
+          <path id="sApi" class="link rest" d="M404,164 V271 H434" marker-end="url(#arrow)"/>
+          <path id="sRec" class="link rec" d="M404,164 V338 H434" marker-end="url(#arrow)"/>
+          <path id="sSms" class="link sms" d="M404,164 V402 H434" marker-end="url(#arrow)"/>
+          <path id="sRecap" class="link mail" d="M404,164 V466 H434" marker-end="url(#arrow)"/>
+          <path id="sRates" class="link data" d="M404,164 V600 H434" marker-end="url(#arrow)"/>
+
+          <!-- Server → Telnyx and the outside -->
+          <path id="sApiRest" class="link rest" d="M674,271 H700 V296 H734" marker-end="url(#arrow)"/>
+          <path id="sRecDb" class="link rec" d="M674,338 H700 V364 H734" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+          <path id="sSmsLookup" class="link sms" d="M674,398 H926 V364 H944" marker-end="url(#arrow)"/>
+          <path id="sRecapMail" class="link mail" d="M674,466 H700 V432 H734" marker-end="url(#arrow)"/>
+          <path id="sBooking" class="link data off" d="M674,600 H700 V637 H734" marker-end="url(#arrow)"/>
+          <text class="link-label data" x="704" y="592" text-anchor="middle" data-i18n="flow.lbl.parallel">in parallel</text>
+
+          <!-- Inside Telnyx -->
+          <path id="tGateStt" class="link audio-in" d="M914,134 H944" marker-end="url(#arrow)"/>
+          <path id="tSttLlm" class="link text" d="M1029,164 V180" marker-end="url(#arrow)"/>
+          <path id="tLlmKb" class="link kb" d="M944,212 H914" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+          <path id="tLlmTts" class="link text" d="M1029,244 V264" marker-end="url(#arrow)"/>
+          <path id="tTtsGate" class="link audio-out" d="M944,296 H924 V140 H914" marker-end="url(#arrow)"/>
+          <path id="tLookupMsg" class="link sms" d="M1029,388 V408" marker-end="url(#arrow)"/>
+          <path id="tMsgPhone" class="link sms" d="M964,456 V546" marker-end="url(#arrow)"/>
+          <path id="tMailInbox" class="link mail" d="M824,456 V546" marker-end="url(#arrow)"/>
+
+          <g id="packets"></g>
+
+          <!-- Client nodes -->
+          <g id="nWsClient" class="node hub" transform="translate(34,104)">
+            <rect width="290" height="60" rx="12"/>
+            <text class="n-title" x="14" y="26" data-i18n="flow.n.wsClient">WebSocket connection</text>
+            <text class="n-sub" x="14" y="44" data-i18n="flow.n.wsClientSub">handleEvent() · audio, text, tools</text>
+            <text id="hubEvent" class="n-mono" x="276" y="44" text-anchor="end"></text>
+          </g>
+          <g id="nMic" class="node" transform="translate(84,200)">
+            <rect width="240" height="56" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.mic">🎙️ Microphone</text>
+            <text class="n-sub" x="14" y="42" data-i18n="flow.n.micSub">Web Audio → PCM16 16 kHz</text>
+          </g>
+          <g id="nSpk" class="node" transform="translate(84,268)">
+            <rect width="240" height="56" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.spk">🔊 Playback</text>
+            <text class="n-sub" x="14" y="42" data-i18n="flow.n.spkSub">PCM → speaker · or the avatar's video</text>
+          </g>
+          <g id="nChat" class="node" transform="translate(84,336)">
+            <rect width="240" height="66" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.chat">💬 Chat and language</text>
+            <text class="n-sub" x="14" y="42" data-i18n="flow.n.chatSub">transcripts · lang.js</text>
+            <g id="flowFlag" class="flag-stack" transform="translate(14,48)"></g>
+            <text id="langName" class="n-mini" x="50" y="60"></text>
+            <text id="chatText" class="n-bubble" x="80" y="60"></text>
+          </g>
+          <g id="nTools" class="node" transform="translate(84,414)">
+            <rect width="240" height="76" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.tools">⚙️ Client-side tools</text>
+            <text class="n-sub" x="14" y="42" data-i18n="flow.n.toolsSub1">update_booking · check_availability</text>
+            <text class="n-sub" x="14" y="56" data-i18n="flow.n.toolsSub2">confirm_booking · run in the page</text>
+            <text id="toolText" class="n-mono" x="14" y="70" data-i18n="flow.waitingTool">idle…</text>
+          </g>
+          <g id="nCard" class="node card" transform="translate(84,506)">
+            <rect width="240" height="150" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.card">📋 Reservation card</text>
+            <text id="cardState" class="n-pill" x="226" y="23" text-anchor="end"></text>
+            <g id="cardRows" transform="translate(14,36)"></g>
+          </g>
+
+          <!-- Server nodes -->
+          <g id="nRelay" class="node hub" transform="translate(384,104)">
+            <rect width="290" height="60" rx="12"/>
+            <text class="n-title" x="14" y="26" data-i18n="flow.n.relay">WebSocket relay</text>
+            <text class="n-sub" x="14" y="44" data-i18n="flow.n.relaySub">forwards frames and adds the API key</text>
+          </g>
+          <g id="nAuth" class="node" transform="translate(434,178)">
+            <rect width="240" height="52" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.auth">🔐 Login &amp; preferences</text>
+            <text class="n-sub" x="14" y="40" data-i18n="flow.n.authSub">session cookie · voice and language cookie</text>
+          </g>
+          <g id="nApi" class="node" transform="translate(434,240)">
+            <rect width="240" height="62" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.api">🔑 Assistant's voice</text>
+            <text class="n-sub" x="14" y="42" data-i18n="flow.n.apiSub1">voice lock · voice list · previews</text>
+            <text class="n-sub" x="14" y="57" data-i18n="flow.n.apiSub2">sets the user's voice on the assistant</text>
+          </g>
+          <g id="nRecorder" class="node" transform="translate(434,312)">
+            <rect width="240" height="52" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.recorder">🎞️ Call recorder</text>
+            <text class="n-sub" x="14" y="40" data-i18n="flow.n.recorderSub">calls.js · every frame, timings, tools</text>
+          </g>
+          <g id="nSms" class="node" transform="translate(434,374)">
+            <rect width="240" height="56" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.sms">📱 SMS / WhatsApp</text>
+            <text id="smsText" class="n-sub" x="14" y="42" data-i18n="flow.n.smsSub">sms.js · re-checks the booking</text>
+          </g>
+          <g id="nRecap" class="node" transform="translate(434,440)">
+            <rect width="240" height="52" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.recap">📧 Recap e-mail</text>
+            <text id="mailText" class="n-sub" x="14" y="40" data-i18n="flow.n.recapSub">recap.js · recomputes the prices</text>
+          </g>
+          <g id="nRates" class="node dashed" transform="translate(434,560)">
+            <rect width="240" height="80" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.rates">🗄️ Availability and prices</text>
+            <text class="n-sub" x="14" y="42" data-i18n="flow.n.ratesSub1">today: demo data computed in the browser</text>
+            <text class="n-sub" x="14" y="57" data-i18n="flow.n.ratesSub2">a real source plugs in here</text>
+            <text class="n-sub" x="14" y="72" data-i18n="flow.n.ratesSub3">(booking engine, PMS, GDS)</text>
+          </g>
+
+          <!-- Telnyx nodes -->
+          <g id="nGate" class="node hub" transform="translate(734,104)">
+            <rect width="180" height="60" rx="12"/>
+            <text class="n-title" x="14" y="26" data-i18n="flow.n.gate">Conversation WS</text>
+            <text class="n-sub" x="14" y="44" data-i18n="flow.n.gateSub">VAD · turns · barge-in</text>
+          </g>
+          <g id="nStt" class="node" transform="translate(944,104)">
+            <rect width="170" height="60" rx="12"/>
+            <text class="n-title" x="12" y="24" data-i18n="flow.n.stt">Speech-to-Text</text>
+            <text class="n-sub" x="12" y="41" data-i18n="flow.n.sttSub">Deepgram Flux · multilingual</text>
+            <text id="sttText" class="n-bubble" x="12" y="56" data-i18n="flow.waitingVoice">waiting for speech…</text>
+          </g>
+          <g id="nKb" class="node" transform="translate(734,180)">
+            <rect width="180" height="64" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.kb">📚 Knowledge base</text>
+            <text class="n-sub" x="14" y="41" data-i18n="flow.n.kbSub1">retrieval tool · kb/*.txt</text>
+            <text class="n-sub" x="14" y="56" data-i18n="flow.n.kbSub2">Storage bucket + embeddings</text>
+          </g>
+          <g id="nLlm" class="node" transform="translate(944,180)">
+            <rect width="170" height="64" rx="12"/>
+            <text class="n-title" x="12" y="24" data-i18n="flow.n.llm">LLM</text>
+            <text class="n-sub" x="12" y="41" data-i18n="flow.n.llmSub">Kimi K2.6 · tools</text>
+            <text id="llmText" class="n-bubble" x="12" y="56">…</text>
+          </g>
+          <g id="nRest" class="node" transform="translate(734,264)">
+            <rect width="180" height="64" rx="12"/>
+            <text class="n-title" x="14" y="24" data-i18n="flow.n.rest">AI Assistants API</text>
+            <text class="n-sub" x="14" y="41" data-i18n="flow.n.restSub">/v2/ai/assistants · voices</text>
+            <text id="apiText" class="n-sub" x="14" y="56" data-i18n="flow.n.apiText">voice → —</text>
+          </g>
+          <g id="nTts" class="node" transform="translate(944,264)">
+            <rect width="170" height="64" rx="12"/>
+            <text class="n-title" x="12" y="24" data-i18n="flow.n.tts">Text-to-Speech</text>
+            <text id="ttsSub" class="n-sub" x="12" y="41">Telnyx Ultra</text>
+            <text id="ttsText" class="n-bubble" x="12" y="56" data-i18n="flow.n.ttsText">voice: —</text>
+          </g>
+          <g id="nSql" class="node" transform="translate(734,340)">
+            <rect width="180" height="48" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.sql">🗄️ SQL database</text>
+            <text class="n-sub" x="14" y="40" data-i18n="flow.n.sqlSub">users · calls · SMS log</text>
+          </g>
+          <g id="nLookup" class="node" transform="translate(944,340)">
+            <rect width="170" height="48" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.lookup">🔎 Number Lookup</text>
+            <text class="n-sub" x="14" y="40" data-i18n="flow.n.lookupSub">mobile or landline?</text>
+          </g>
+          <g id="nMail" class="node" transform="translate(734,408)">
+            <rect width="180" height="48" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.mail">✉️ Email API</text>
+            <text class="n-sub" x="14" y="40" data-i18n="flow.n.mailSub">tagged with the user</text>
+          </g>
+          <g id="nMsg" class="node" transform="translate(944,408)">
+            <rect width="170" height="48" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.msg">💬 Messaging</text>
+            <text class="n-sub" x="14" y="40" data-i18n="flow.n.msgSub">SMS · WhatsApp template</text>
+          </g>
+
+          <!-- The guest and your systems -->
+          <g id="nInbox" class="node" transform="translate(734,546)">
+            <rect width="180" height="50" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.inbox">📬 Guest inbox</text>
+            <text id="inboxText" class="n-sub" x="14" y="40" data-i18n="flow.n.inboxSub">the recap e-mail</text>
+          </g>
+          <g id="nPhone" class="node" transform="translate(944,546)">
+            <rect width="170" height="50" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.phone">📱 Guest phone</text>
+            <text id="phoneText" class="n-sub" x="14" y="40" data-i18n="flow.n.phoneSub">SMS or WhatsApp</text>
+          </g>
+          <g id="nBooking" class="node dashed" transform="translate(734,612)">
+            <rect width="380" height="50" rx="12"/>
+            <text class="n-title" x="14" y="22" data-i18n="flow.n.booking">🏨 Booking engine · PMS · GDS · OTAs</text>
+            <text class="n-sub" x="14" y="40" data-i18n="flow.n.bookingSub">your systems · not connected in the demo</text>
+          </g>
+        </svg>
+        </div>
+      <ul class="legend">
+        <li><i class="sq yours"></i> <span data-i18n="flow.leg.zYours">your code and your server</span></li>
+        <li><i class="sq telnyx"></i> <span data-i18n="flow.leg.zTelnyx">Telnyx</span></li>
+        <li><i class="sq third"></i> <span data-i18n="flow.leg.zThird">the guest and your systems</span></li>
+        <li class="sep"></li>
+        <li><i class="dot ws"></i> <span data-i18n="flow.leg.ws">WebSocket (audio + events)</span></li>
+        <li><i class="dot audio-in"></i> <span data-i18n="flow.leg.in">guest's voice</span></li>
+        <li><i class="dot text"></i> <span data-i18n="flow.leg.text">text</span></li>
+        <li><i class="dot audio-out"></i> <span data-i18n="flow.leg.out">assistant's voice</span></li>
+        <li><i class="dot avatar"></i> <span data-i18n="flow.leg.avatar">video avatar</span></li>
+        <li><i class="dot tools"></i> <span data-i18n="flow.leg.tools">tools</span></li>
+        <li><i class="dot ui"></i> <span data-i18n="flow.leg.ui">page update</span></li>
+        <li><i class="dot rest"></i> <span data-i18n="flow.leg.rest">REST</span></li>
+        <li><i class="dot kb"></i> <span data-i18n="flow.leg.kb">knowledge base</span></li>
+        <li><i class="dot mail"></i> <span data-i18n="flow.leg.mail">e-mail</span></li>
+        <li><i class="dot sms"></i> <span data-i18n="flow.leg.sms">SMS / WhatsApp</span></li>
+        <li><i class="dot rec"></i> <span data-i18n="flow.leg.rec">recording</span></li>
+        <li><i class="dot data"></i> <span data-i18n="flow.leg.data">availability data</span></li>
+      </ul>
+      </section>
+
+      <aside class="side">
+        <section class="card panel">
+          <div class="tabs" role="tablist">
+            <button type="button" role="tab" class="on" data-tab="step" data-i18n="flow.tabStep">This step</button>
+            <button type="button" role="tab" data-tab="roles" data-i18n="flow.tabRoles">Who does what</button>
+          </div>
+          <div id="stepDetail" class="tab-body step-detail" role="tabpanel"></div>
+          <div id="rolesBody" class="tab-body roles-body" role="tabpanel" hidden></div>
+        </section>
+
+        <section class="card panel events">
+          <div class="panel-head">
+            <h2 data-i18n="flow.events">Live events</h2>
+            <div class="filters" role="group" data-i18n-attr="aria-label:flow.aria.filter" aria-label="Filter events">
+              <button type="button" class="chip on" data-filter="all" data-i18n="flow.filterAll">All</button>
+              <button type="button" class="chip" data-filter="client" data-i18n="flow.filterClient">Client only</button>
+              <button type="button" class="chip" data-filter="server" data-i18n="flow.filterServer">Server only</button>
+            </div>
+          </div>
+          <ol id="log" class="log"></ol>
+        </section>
+      </aside>
+    </main>
+  </div>
+  <script src="account.js"></script>
+  <script src="ui.js"></script>
+  <script src="i18n.js"></script>
+  <script src="i18n/en.js"></script>
+  <script src="i18n/flow-en.js"></script>
+  <script src="i18n/fr.js"></script>
+  <script src="i18n/flow-fr.js"></script>
+  <script src="i18n/de.js"></script>
+  <script src="i18n/flow-de.js"></script>
+  <script src="i18n/it.js"></script>
+  <script src="i18n/flow-it.js"></script>
+  <script src="i18n/es.js"></script>
+  <script src="i18n/flow-es.js"></script>
+  <script src="i18n/nl.js"></script>
+  <script src="i18n/flow-nl.js"></script>
+  <script src="flow.js"></script>
+</body>
+</html>

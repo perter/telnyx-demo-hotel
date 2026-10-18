@@ -1,0 +1,58 @@
+# TelnyxHotel Paris Rive Gauche - Property Knowledge Base
+Fictional demo data. Every section below is about TelnyxHotel Paris Rive Gauche only.
+
+## TelnyxHotel Paris Rive Gauche — About the Hotel
+TelnyxHotel Paris Rive Gauche is an elegant hotel of 120 rooms with a literary theme, occupying a 19th-century stone building and a 1930s wing in the Saint-Germain-des-Prés quarter on the Left Bank of Paris. At its centre is a two-storey library of about 6,000 books that guests may borrow, and each floor is dedicated to a literary genre. The style is classic Parisian: herringbone parquet, marble fireplaces, deep green velvet and brass reading lamps. TelnyxHotel Paris Rive Gauche has an indoor pool and spa and the largest meeting space of the two Paris hotels.
+
+TelnyxHotel Paris Rive Gauche is a fictional hotel written for a technology demo. It has no official star rating and no relation to any real hotel or group.
+
+## TelnyxHotel Paris Rive Gauche — Location and Getting There
+TelnyxHotel Paris Rive Gauche is on a quiet street between the Boulevard Saint-Germain and the Luxembourg Gardens. The nearest metro stations are Saint-Germain-des-Prés on line 4, Mabillon on line 10 and Odéon on lines 4 and 10, each about five minutes on foot.
+
+From Charles de Gaulle airport, a taxi takes about 50 to 65 minutes, with a flat fare to the Left Bank. The RER B train runs to Saint-Michel–Notre-Dame in about 40 minutes, followed by a ten-minute walk or a short taxi ride. From Orly airport, a taxi takes about 30 to 40 minutes; by public transport, metro line 14 runs to Châtelet, with a change to line 4. Gare Montparnasse is about ten minutes by taxi, and Gare du Nord is about 20 minutes on line 4. A doorman at TelnyxHotel Paris Rive Gauche calls taxis and helps with luggage.
+
+## TelnyxHotel Paris Rive Gauche — Check-in and Check-out
+Check-in at TelnyxHotel Paris Rive Gauche is from 15:00 and check-out is by 11:00. Late check-out is available on request, subject to availability. Reception and the concierge desk are staffed around the clock. Guests arriving early may leave luggage with the doorman, read in the library or use the spa changing rooms and showers. A passport or identity card and a payment card are needed at check-in. Bookings may be cancelled free of charge up to 7 days before arrival.
+
+## TelnyxHotel Paris Rive Gauche — Room Categories
+TelnyxHotel Paris Rive Gauche offers four room categories. The Essential Room is about 20 square metres with a queen bed and a courtyard view over the inner garden court, for up to 2 guests. The Deluxe City View is about 28 square metres with a king bed and a sofa bed, and a city view over the street and the zinc roofs of Saint-Germain, for up to 3 guests.
+
+The Family Studio is about 38 square metres, two connecting rooms with a kitchenette, for up to 4 guests. The Skyline Suite is about 55 square metres on the top floor, with a private terrace looking over the rooftops towards the towers of Saint-Sulpice, for up to 4 guests. A maximum of 4 guests may stay in any room at TelnyxHotel Paris Rive Gauche, and children count as guests. Every room has a small bookshelf chosen to match the theme of its floor and a reading armchair. Room prices are provided by the booking system.
+
+## TelnyxHotel Paris Rive Gauche — Breakfast
+The breakfast buffet at TelnyxHotel Paris Rive Gauche is included in every rate and is served from 7:30 to 10:30 in Brasserie Marginalia. It is a full spread of viennoiseries, breads, crêpes made at a stand, omelettes and eggs to order, smoked salmon, cheeses and charcuterie, cereals, fruit salad and fresh juices. A gluten-free corner and plant-based options are always available.
+
+## TelnyxHotel Paris Rive Gauche — Restaurants and Bars
+Brasserie Marginalia is the restaurant of TelnyxHotel Paris Rive Gauche, a traditional brasserie with red banquettes and a zinc counter. It serves classics such as onion soup, steak frites, sole meunière and seafood platters, without a break from 12:00 to 23:00 every day of the week, which makes it convenient for late arrivals.
+
+Le Signet is the hotel bar, set beside the library, open from 16:00 to 1:30, with live jazz on Thursday, Friday and Saturday evenings from 21:00. The Salon de Lecture inside the library serves tea, coffee and pastries from 14:00 to 18:00. Room service at TelnyxHotel Paris Rive Gauche is available 24 hours, with a reduced menu at night.
+
+## TelnyxHotel Paris Rive Gauche — Fitness, Wellness and Pool
+TelnyxHotel Paris Rive Gauche has an indoor heated swimming pool of 12 metres in the basement, part of Spa Parenthèse. The pool is open from 7:00 to 21:00 and free for hotel guests; children under 16 may swim until 17:00 with an adult. Spa Parenthèse also has a sauna, a steam room and five treatment rooms for massages and facials, which are charged separately and should be reserved ahead, especially at weekends. A fitness room with cardio machines and weights is open 24 hours with the room key.
+
+## TelnyxHotel Paris Rive Gauche — Meetings and Events
+TelnyxHotel Paris Rive Gauche has five meeting rooms on the first floor, each named after a punctuation mark. The largest, the Salon Virgule, holds up to 120 people seated in rows or 80 for a banquet; the others take 10 to 40 people. All have daylight, projectors, sound systems and video-conferencing. The library can be reserved for readings, book launches and receptions of up to 100 standing guests. A dedicated events coordinator can be reached through paris-rive-gauche@telnyxhotel.example.
+
+## TelnyxHotel Paris Rive Gauche — Families and Children
+Families are well looked after at TelnyxHotel Paris Rive Gauche. The Family Studio suits up to 4 guests, children included. The library has a children's corner with picture books in several languages, and a storytelling hour in French and English is held on Wednesday and Sunday at 17:00. Brasserie Marginalia has a children's menu, and cots, high chairs and bed rails are free on request. Family swimming hours are from 9:00 to 17:00. The Luxembourg Gardens, with a playground, puppet theatre and toy sailing boats, are about ten minutes on foot.
+
+## TelnyxHotel Paris Rive Gauche — Pets
+Pets are not accepted at TelnyxHotel Paris Rive Gauche, because of the library, the spa and the many carpeted rooms. The only exception is assistance animals, which are welcome throughout the hotel at no charge. Guests travelling with a cat or dog in Paris can stay at TelnyxHotel Paris Le Marais, which welcomes them.
+
+## TelnyxHotel Paris Rive Gauche — Parking
+TelnyxHotel Paris Rive Gauche offers valet parking in a secure underground garage close to the hotel, with 25 spaces, charged per night; the concierge confirms the rate. Three charging points for electric cars are available through the valet.
+
+## TelnyxHotel Paris Rive Gauche — Accessibility
+TelnyxHotel Paris Rive Gauche has a step-free main entrance with a doorman, and four lifts serve every floor in both wings, including the spa level and the top floor. Eight accessible rooms are available, with wide doors, roll-in showers, grab bars and lowered switches. The pool has a mobile hoist, and the brasserie, bar, library ground floor and meeting rooms are all wheelchair accessible; the library's upper gallery is reached by lift.
+
+## TelnyxHotel Paris Rive Gauche — Wi-Fi and In-Room Amenities
+Wi-Fi is free and reliable across TelnyxHotel Paris Rive Gauche. Rooms have air conditioning, a writing desk with stationery, a smart television, a safe, a minibar, an espresso machine and kettle, bathrobes and slippers, a hairdryer, an iron on request and blackout curtains. Sockets are the French and European types at 230 volts, with USB ports by the bed.
+
+## TelnyxHotel Paris Rive Gauche — Nearby Sights and Neighbourhood Tips
+The church of Saint-Germain-des-Prés is about five minutes on foot from TelnyxHotel Paris Rive Gauche, and the church of Saint-Sulpice is closer still. The Luxembourg Gardens are about ten minutes away. The Musée d'Orsay is about 15 to 20 minutes on foot, the Louvre about 15 minutes across the Pont des Arts, and Notre-Dame and the Latin Quarter about 15 minutes to the east. The quarter is full of art galleries, antique dealers, bookshops and café terraces; mornings are quiet and the best time to wander. The Eiffel Tower is about 15 minutes by taxi.
+
+## TelnyxHotel Paris Rive Gauche — Front Desk Contacts
+Reception at TelnyxHotel Paris Rive Gauche is available 24 hours a day at +33 1 55 50 01 60. Spa Parenthèse can be reached at +33 1 55 50 01 61, and the concierge at +33 1 55 50 01 62. The e-mail address is paris-rive-gauche@telnyxhotel.example. All contact details are fictional and for demonstration only.
+
+## TelnyxHotel Paris Rive Gauche — Good to Know
+TelnyxHotel Paris Rive Gauche is entirely non-smoking, apart from the private suite terraces and a marked area of the inner garden court. Quiet hours are from 23:00 to 7:00; the jazz in Le Signet ends at 23:30 and cannot be heard in the rooms. Luggage storage is free on arrival and departure days. Paris charges a tourist tax per person per night, not included in the room rate and paid at the hotel; guests under 18 are exempt. Reception confirms the current amount. Prices are quoted in euros.

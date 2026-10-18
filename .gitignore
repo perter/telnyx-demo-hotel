@@ -1,0 +1,8 @@
+node_modules/
+.env
+data/
+.edge-home/
+.DS_Store
+# Telnyx Edge build output; the manifest example is the only tracked file
+edge/*
+!edge/func.toml.example

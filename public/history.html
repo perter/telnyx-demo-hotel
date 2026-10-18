@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call history — TelnyxHotel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="console.css">
+</head>
+<body class="console">
+  <header id="topbar"></header>
+
+  <!-- ============ List ============ -->
+  <main id="listView">
+    <div class="page-head">
+      <div>
+        <h1>Call history</h1>
+        <p class="muted" id="listSub">Every test call made with the voice concierge. Click a call to see its full trip.</p>
+      </div>
+      <button class="btn ghost" id="refreshBtn" type="button">Refresh</button>
+    </div>
+
+    <section class="stats" id="totals"></section>
+
+    <section class="card flush">
+      <div class="filters" style="padding:14px 16px;border-bottom:1px solid var(--line)">
+        <input type="search" id="search" placeholder="Search voice, receptionist, booking code, user…" aria-label="Search calls">
+        <select id="userFilter" aria-label="User" hidden><option value="">All users</option></select>
+        <select id="statusFilter" aria-label="Status">
+          <option value="">Any status</option>
+          <option value="booked">With booking</option>
+          <option value="errors">With errors</option>
+          <option value="failed">Failed to connect</option>
+          <option value="live">In progress</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr id="listHead"></tr></thead>
+          <tbody id="calls"><tr><td class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card flush">
+      <div class="card-head" style="padding:16px 18px 0"><h2>Guest messages</h2><span class="muted hint" id="msgSub"></span></div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr id="msgHead"></tr></thead>
+          <tbody id="messages"><tr><td class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ Detail ============ -->
+  <main id="detailView" hidden>
+    <div>
+      <button class="back-link" id="backBtn" type="button">← All calls</button>
+    </div>
+    <div class="page-head">
+      <div>
+        <div class="call-title"><h1 id="dTitle"></h1><span id="dChips"></span></div>
+        <p class="muted" id="dSub"></p>
+      </div>
+      <div class="row-actions">
+        <button class="btn ghost" id="downloadBtn" type="button">Download JSON</button>
+        <button class="btn danger" id="deleteBtn" type="button">Delete</button>
+      </div>
+    </div>
+
+    <section class="stats" id="dStats"></section>
+
+    <div class="grid-2">
+      <section class="card">
+        <h2>Call trip — connection setup</h2>
+        <p class="muted" style="margin:-6px 0 12px;font-size:13px">What happened between clicking “call” and hearing the first word.</p>
+        <div class="trip" id="dTrip"></div>
+        <div class="legend">
+          <span><i style="background:var(--server)"></i>Our server</span>
+          <span><i style="background:var(--down)"></i>Telnyx</span>
+          <span><i style="background:var(--up)"></i>Browser</span>
+          <span><i style="background:var(--err)"></i>Failed</span>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Call details</h2>
+        <dl class="kv" id="dInfo"></dl>
+      </section>
+    </div>
+
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-head"><h2>Conversation</h2><span class="muted" style="font-size:13px">badges = time from guest's last word to assistant's first audio</span></div>
+        <div class="convo scroll-box" id="dConvo"></div>
+      </section>
+      <div style="display:grid;gap:20px;align-content:start">
+        <section class="card">
+          <h2>Response latency per turn</h2>
+          <div class="bars" id="dLatency"></div>
+        </section>
+        <section class="card">
+          <h2>Audio & traffic</h2>
+          <dl class="kv" id="dTraffic"></dl>
+        </section>
+      </div>
+    </div>
+
+    <section class="card flush">
+      <div class="card-head" style="padding:16px 18px 0"><h2>Tool calls</h2></div>
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>At</th><th>Tool</th><th>Runs in</th><th class="num">Run time</th><th class="num">Round trip</th><th>Result</th><th>Arguments → output</th></tr></thead>
+        <tbody id="dTools"></tbody>
+      </table></div>
+    </section>
+
+    <div class="grid-2">
+      <section class="card flush">
+        <div class="card-head" style="padding:16px 18px 0"><h2>Server requests</h2></div>
+        <div class="table-wrap"><table class="data">
+          <thead><tr><th>At</th><th>Request</th><th class="num">Status</th><th class="num">Time</th></tr></thead>
+          <tbody id="dHttp"></tbody>
+        </table></div>
+      </section>
+      <section class="card flush">
+        <div class="card-head" style="padding:16px 18px 0"><h2>Events by type</h2></div>
+        <div class="table-wrap scroll-box" style="max-height:360px"><table class="data">
+          <thead><tr><th>Event</th><th>Direction</th><th class="num">Count</th></tr></thead>
+          <tbody id="dCounts"></tbody>
+        </table></div>
+      </section>
+    </div>
+
+    <section class="card" id="dErrorsCard" hidden>
+      <h2>Errors</h2>
+      <div id="dErrors"></div>
+    </section>
+
+    <section class="card flush">
+      <div class="card-head" style="padding:16px 18px 12px;border-bottom:1px solid var(--line);margin:0">
+        <h2>Event timeline</h2>
+        <div class="filters">
+          <label class="perm"><input type="checkbox" data-dir="up" checked> Browser → Telnyx</label>
+          <label class="perm"><input type="checkbox" data-dir="down" checked> Telnyx → Browser</label>
+          <label class="perm"><input type="checkbox" data-dir="server" checked> Server</label>
+          <input type="search" id="tlSearch" placeholder="Filter event type or content" aria-label="Filter events">
+        </div>
+      </div>
+      <p class="muted" style="margin:10px 18px;font-size:13px">Audio chunks and transcript deltas are counted, not listed (first audio chunk of each response is shown). Click a row for the full payload.</p>
+      <div class="timeline scroll-box" id="dTimeline"></div>
+    </section>
+  </main>
+
+  <script src="account.js"></script>
+  <script src="ui.js"></script>
+  <script src="history.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in — TelnyxHotel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="console.css">
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-hero">
+      <div class="brand"><span class="telnyx-logo" role="img" aria-label="Telnyx"></span><span class="tagline">TelnyxHotel</span></div>
+      <h1>A front desk that speaks <em>six languages</em>.</h1>
+      <p>The TelnyxHotel demo: guests book a room by talking to an AI receptionist built on Telnyx AI Assistants, Voice, Messaging and Email.</p>
+      <ul>
+        <li>Realtime voice concierge in English, French, German, Italian, Spanish and Dutch</li>
+        <li>Booking confirmations by e-mail, SMS or WhatsApp</li>
+        <li>Every call traced end to end, from microphone to first word</li>
+      </ul>
+    </section>
+    <form class="auth-card" id="loginForm" novalidate>
+      <h2>Sign in</h2>
+      <label class="field">E-mail
+        <input type="email" name="email" autocomplete="username" required autofocus>
+      </label>
+      <label class="field">Password
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <p class="form-error" id="error" role="alert"></p>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="muted" style="margin:0;font-size:13px">Accounts are created by an admin. Ask them for access.</p>
+    </form>
+  </main>
+  <p class="auth-credit">Photo: Tony Webster, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a></p>
+  <script>
+    const form = document.getElementById("loginForm");
+    const error = document.getElementById("error");
+    const next = new URLSearchParams(location.search).get("next");
+    // Only follow same-origin paths (never "//host", "/\\host", "http:…").
+    const safeNext = next ? (() => { try { const u = new URL(next, location.origin); return u.origin === location.origin ? u.pathname + u.search + u.hash : null; } catch { return null; } })() : null;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      error.textContent = "";
+      const btn = form.querySelector("button");
+      btn.disabled = true;
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: form.email.value, password: form.password.value }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+        const allowed = data.pages.map((p) => p.href);
+        const target = safeNext && allowed.includes(safeNext.split(/[?#]/)[0]) ? safeNext : allowed[0];
+        if (!target) throw new Error("Your account has no pages assigned yet. Ask an admin.");
+        location.href = target;
+      } catch (err) {
+        error.textContent = err.message;
+        btn.disabled = false;
+      }
+    });
+  </script>
+  <script src="ui.js"></script>
+</body>
+</html>

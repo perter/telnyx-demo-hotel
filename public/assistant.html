@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant — TelnyxHotel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="console.css">
+</head>
+<body class="console assistant-page">
+  <header id="topbar"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>AI Assistant</h1>
+        <p class="muted" id="assistantSub">Loading the live assistant from Telnyx…</p>
+      </div>
+      <button class="btn ghost" id="reloadBtn" type="button">Reload from Telnyx</button>
+    </div>
+    <p class="form-error" id="loadError" role="alert"></p>
+
+    <!-- Concierge widget: languages, voice shortlists, greetings -->
+    <section class="card" id="widgetCard">
+      <div class="card-head">
+        <div>
+          <h2>Languages &amp; voices</h2>
+          <p class="muted hint">What guests pick before calling. Every voice is Telnyx Ultra; the default is preselected.</p>
+        </div>
+      </div>
+      <div class="field-label">Languages offered</div>
+      <div class="lang-list" id="langList"></div>
+      <div id="langPanels"></div>
+      <div class="save-row">
+        <button class="btn" type="button" id="saveWidget">Save languages &amp; voices</button>
+        <p class="form-error" id="widgetError" role="alert"></p>
+        <p class="form-ok" id="widgetOk" role="status"></p>
+      </div>
+    </section>
+
+    <!-- Video avatar (beta) -->
+    <section class="card" id="avatarCard">
+      <h2>Video avatar <span class="chip warn">beta</span></h2>
+      <p class="muted hint">A face for the receptionist, streamed to the booking page over WebRTC with the voice lip-synced. It is used only for users with <strong>Video avatar</strong> turned on in <a href="/admin.html">Users &amp; access</a>; everyone else gets voice only. Billed per minute on top of the call (free during October 2026, then $0.08/min).</p>
+      <label class="check"><input type="checkbox" id="avatarEnabled"> Set up a video avatar on the assistant</label>
+      <div class="form-grid">
+        <label class="field">Avatar
+          <select id="avatarId"></select>
+        </label>
+        <label class="field">Background
+          <select id="avatarBackground"></select>
+        </label>
+      </div>
+      <div class="save-row">
+        <button class="btn" type="button" data-save="avatar">Save video avatar</button>
+        <p class="form-error" data-error="avatar" role="alert"></p>
+        <p class="form-ok" data-ok="avatar" role="status"></p>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <!-- Prompt & model -->
+      <section class="card" id="promptCard">
+        <h2>Prompt &amp; model</h2>
+        <label class="field">Model
+          <select id="model"></select>
+        </label>
+        <label class="field">Instructions <span class="muted hint" id="promptCount"></span>
+          <textarea id="instructions" rows="18" spellcheck="false"></textarea>
+        </label>
+        <p class="muted hint">Variables filled in per call: <code>{{receptionist_name}}</code>, <code>{{receptionist_gender}}</code>, <code>{{start_language}}</code>, <code>{{languages}}</code>, <code>{{today}}</code>. The greeting is set per language above.</p>
+        <div class="save-row">
+          <button class="btn" type="button" data-save="prompt">Save prompt &amp; model</button>
+          <p class="form-error" data-error="prompt" role="alert"></p>
+          <p class="form-ok" data-ok="prompt" role="status"></p>
+        </div>
+      </section>
+
+      <div class="stack">
+        <!-- Voice -->
+        <section class="card" id="voiceCard">
+          <h2>Voice</h2>
+          <label class="check"><input type="checkbox" id="expressive"> Expressive mode <span class="muted hint">— emotional nuance with Telnyx Ultra voices</span></label>
+          <div class="form-grid">
+            <label class="field">Background audio
+              <select id="background">
+                <option value="silence">None</option>
+                <option value="office">Office ambience</option>
+              </select>
+            </label>
+            <label class="field">Background volume <output id="volumeOut"></output>
+              <input type="range" id="volume" min="0.1" max="1" step="0.1">
+            </label>
+          </div>
+          <p class="muted hint">Voice on the assistant right now: <span class="mono" id="currentVoice">—</span> (set for each call from the guest's choice).</p>
+          <div class="save-row">
+            <button class="btn" type="button" data-save="voice">Save voice</button>
+            <p class="form-error" data-error="voice" role="alert"></p>
+            <p class="form-ok" data-ok="voice" role="status"></p>
+          </div>
+        </section>
+
+        <!-- Knowledge base -->
+        <section class="card" id="kbCard">
+          <h2>Knowledge base</h2>
+          <label class="check"><input type="checkbox" id="kbEnabled"> Search the hotel knowledge base</label>
+          <div class="form-grid">
+            <label class="field">Results per search
+              <input type="number" id="kbResults" min="1" max="10" step="1">
+            </label>
+            <label class="field">Storage bucket
+              <input type="text" id="kbBucket" readonly>
+            </label>
+          </div>
+          <div class="table-wrap kb-files">
+            <table class="data">
+              <thead><tr><th>File</th><th>Status</th><th>Embedded</th></tr></thead>
+              <tbody id="kbFiles"><tr><td colspan="3" class="empty">—</td></tr></tbody>
+            </table>
+          </div>
+          <p class="muted hint">The text lives in <code>kb/</code> in the repo; after editing it run <code>npm run kb:sync</code>.</p>
+          <div class="save-row">
+            <button class="btn" type="button" data-save="knowledge">Save knowledge base</button>
+            <p class="form-error" data-error="knowledge" role="alert"></p>
+            <p class="form-ok" data-ok="knowledge" role="status"></p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Listening & turn-taking -->
+    <section class="card" id="listenCard">
+      <h2>Listening &amp; turn-taking</h2>
+      <p class="muted hint">Speech recognition: <span class="mono" id="sttModel">—</span>. Lower confidence and a shorter silence timeout make replies faster but can cut off a guest who pauses.</p>
+      <div class="form-grid">
+        <label class="field">End-of-turn confidence <output id="eotOut"></output>
+          <input type="range" id="eot" min="0.5" max="0.9" step="0.05">
+        </label>
+        <label class="field">Silence timeout (ms)
+          <input type="number" id="eotTimeout" min="500" max="10000" step="100">
+        </label>
+        <label class="field">Interrupt prediction <output id="ipOut"></output>
+          <input type="range" id="interruptPrediction" min="0" max="1" step="0.05">
+        </label>
+        <label class="field">Idle check-in (s, empty = off)
+          <input type="number" id="idleReply" min="5" max="120" step="1">
+        </label>
+        <label class="field">Call time limit (s)
+          <input type="number" id="timeLimit" min="60" max="3600" step="30">
+        </label>
+      </div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="interruptions"> Guests can interrupt the assistant</label>
+        <label class="check"><input type="checkbox" id="greetingLock"> The greeting can't be interrupted</label>
+      </div>
+      <div class="save-row">
+        <button class="btn" type="button" data-save="listening">Save listening</button>
+        <p class="form-error" data-error="listening" role="alert"></p>
+        <p class="form-ok" data-ok="listening" role="status"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="account.js"></script>
+  <script src="ui.js"></script>
+  <script src="assistant.js"></script>
+</body>
+</html>

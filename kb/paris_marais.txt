@@ -1,0 +1,58 @@
+# TelnyxHotel Paris Le Marais - Property Knowledge Base
+Fictional demo data. Every section below is about TelnyxHotel Paris Le Marais only.
+
+## TelnyxHotel Paris Le Marais — About the Hotel
+TelnyxHotel Paris Le Marais is a design-led boutique hotel of 54 rooms in a 17th-century townhouse in Le Marais, on the Right Bank of Paris. Behind a heavy carriage door lies a paved courtyard, a ground-floor art gallery with changing exhibitions and interiors that mix old stone and beams with bold colour, contemporary furniture and works by young artists. TelnyxHotel Paris Le Marais attracts a creative, fashion-conscious crowd and guests who enjoy galleries, small boutiques and late dinners.
+
+TelnyxHotel Paris Le Marais is a fictional hotel made up for a technology demo. It has no official star rating and no tie to any real hotel or group.
+
+## TelnyxHotel Paris Le Marais — Location and Getting There
+TelnyxHotel Paris Le Marais is on a side street a few steps from the Place des Vosges, in the heart of Le Marais. The nearest metro station is Saint-Paul on line 1, about five minutes on foot; Chemin Vert on line 8 is about the same distance, and Bastille, with lines 1, 5 and 8, is about ten minutes away.
+
+From Charles de Gaulle airport, a taxi takes about 45 to 60 minutes, with a flat fare to the Right Bank. The RER B train reaches Châtelet–Les Halles in about 35 minutes, and from there line 1 runs two stops to Saint-Paul. From Orly airport, a taxi takes about 35 to 45 minutes, or metro line 14 reaches Châtelet in about 25 minutes. Gare de Lyon is about ten minutes by taxi and Gare du Nord about 15 to 20 minutes. Taxis stop at the carriage door of TelnyxHotel Paris Le Marais.
+
+## TelnyxHotel Paris Le Marais — Check-in and Check-out
+Check-in at TelnyxHotel Paris Le Marais is from 15:00 and check-out is by 11:00. Late check-out can be requested and depends on availability. Reception is staffed 24 hours; after 23:00 the carriage door is locked and opened with the room key or the bell. A passport or identity card and a payment card are required at check-in. Free cancellation applies up to 7 days before arrival.
+
+## TelnyxHotel Paris Le Marais — Room Categories
+There are four room categories at TelnyxHotel Paris Le Marais. The Essential Room is about 20 square metres with a queen bed and a courtyard view onto the paved court and its fig tree, for up to 2 guests. The Deluxe City View is about 28 square metres with a king bed and a sofa bed, and a city view over the street and the slate roofs of Le Marais, for up to 3 guests.
+
+The Family Studio is about 38 square metres, two connecting rooms with a kitchenette, for up to 4 guests. The Skyline Suite is about 55 square metres on the top floor under the roof, with a private terrace above the rooftops, for up to 4 guests. The limit at TelnyxHotel Paris Le Marais is 4 guests per room, and children count as guests. Each room is decorated by a different artist, so colours and artworks vary. Prices are supplied by the booking system and are not given here.
+
+## TelnyxHotel Paris Le Marais — Breakfast
+The breakfast buffet at TelnyxHotel Paris Le Marais is included in every rate and served from 7:30 to 10:30 in Le Pavé Bleu, with courtyard tables in good weather. It offers croissants, pains au chocolat and baguettes delivered each morning, butter and jams, French cheeses, ham, soft-boiled eggs, yoghurt, fruit, fresh orange juice and proper coffee. Vegan and gluten-free choices are set out every day.
+
+## TelnyxHotel Paris Le Marais — Restaurants and Bars
+Le Pavé Bleu is the bistro of TelnyxHotel Paris Le Marais, a room of blue tiles and mirrors opening onto the courtyard. It serves a short seasonal menu of modern French dishes with natural wines, for lunch from 12:00 to 14:30 and dinner from 19:00 to 22:30, Tuesday to Saturday. It is closed for lunch and dinner on Sundays and Mondays, when the bar serves light plates instead.
+
+L'Encrier Rouge is the cocktail bar, a small, dim room lined with red lacquer, open from 17:30 to 1:00. The gallery itself has a coffee counter open from 10:00 to 18:00. Room service at TelnyxHotel Paris Le Marais is limited to breakfast and to a light menu from 12:00 to 22:00.
+
+## TelnyxHotel Paris Le Marais — Fitness, Wellness and Pool
+TelnyxHotel Paris Le Marais does not have a swimming pool. In the vaulted stone cellars, an area called Les Voûtes holds a small fitness room, open from 6:00 to 23:00 with the room key, and a hammam steam room open from 16:00 to 21:00, free for guests aged 16 and over and bookable in 45-minute private sessions at reception. Massages can be booked a day ahead and are charged separately. Guests who want a pool in Paris should look at TelnyxHotel Paris Rive Gauche, which has an indoor pool.
+
+## TelnyxHotel Paris Le Marais — Meetings and Events
+TelnyxHotel Paris Le Marais is suited to small, creative gatherings rather than conferences. The Atelier is a daylight meeting room for up to 14 people with a large screen and video-conferencing. The ground-floor gallery can be privatised in the evening for launches, press days and receptions of up to 80 standing guests, and the courtyard for summer cocktails. For larger meetings in Paris, TelnyxHotel Paris Rive Gauche has more space. Contact paris-marais@telnyxhotel.example.
+
+## TelnyxHotel Paris Le Marais — Families and Children
+Children are welcome at TelnyxHotel Paris Le Marais, although the hotel has an adult, evening-oriented atmosphere. The Family Studio is the right room for up to 4 guests, children included. Cots and high chairs are free on request. Le Pavé Bleu has no separate children's menu but will prepare simple dishes. On Sunday mornings the gallery runs a free drawing workshop for children aged 5 to 12. Babysitting is possible with 24 hours' notice. The playgrounds and sandpit of the Place des Vosges are two minutes away.
+
+## TelnyxHotel Paris Le Marais — Pets
+Cats and dogs are welcome at TelnyxHotel Paris Le Marais without any limit on size, one animal per room, for a cleaning supplement per stay that reception confirms. Dogs are allowed in the courtyard, in L'Encrier Rouge and at the courtyard tables of Le Pavé Bleu, but not in the gallery or Les Voûtes. Assistance animals are welcome everywhere and free of charge.
+
+## TelnyxHotel Paris Le Marais — Parking
+TelnyxHotel Paris Le Marais has no car park, and the streets of Le Marais are narrow, partly pedestrian and closed to through traffic on some Sundays. A public underground car park is about five minutes on foot; the hotel can reserve a space there, charged per day at the car park's rate. Guests can stop briefly at the carriage door to unload.
+
+## TelnyxHotel Paris Le Marais — Accessibility
+The courtyard entrance of TelnyxHotel Paris Le Marais is step-free through the carriage door, and a lift serves all floors, including the top floor; the lift is compact but takes a standard wheelchair. Three accessible rooms have wide doors and adapted bathrooms with level showers. The bistro, bar and gallery are on the ground floor without steps. Les Voûtes, in the cellar, is reached by a stair lift rather than the main lift.
+
+## TelnyxHotel Paris Le Marais — Wi-Fi and In-Room Amenities
+Free high-speed Wi-Fi is available throughout TelnyxHotel Paris Le Marais. Rooms have air conditioning, a smart television, a wireless speaker, a safe, a minibar with local products, an espresso machine and kettle, bathrobes, a hairdryer and double-glazed windows. Sockets are the French and European types at 230 volts; adapters and phone chargers can be borrowed. Laundry is returned the next day, except on Sundays.
+
+## TelnyxHotel Paris Le Marais — Nearby Sights and Neighbourhood Tips
+The Place des Vosges, the oldest planned square in Paris, is a few steps from TelnyxHotel Paris Le Marais. The Musée Picasso and the Musée Carnavalet, which tells the history of Paris, are each about five to ten minutes on foot. The old Jewish quarter around the Rue des Rosiers is five minutes away and good for a quick lunch. The Île Saint-Louis is about ten minutes on foot and Notre-Dame about 15. The Louvre is about 25 minutes on foot or four stops on line 1. Many boutiques in Le Marais open on Sundays, unlike much of Paris, so Sunday afternoons are crowded.
+
+## TelnyxHotel Paris Le Marais — Front Desk Contacts
+Reception at TelnyxHotel Paris Le Marais answers 24 hours a day at +33 1 55 50 01 30. Tables at Le Pavé Bleu and hammam sessions can be booked at +33 1 55 50 01 31. The e-mail address is paris-marais@telnyxhotel.example. These details are fictional and intended for demonstration only.
+
+## TelnyxHotel Paris Le Marais — Good to Know
+TelnyxHotel Paris Le Marais is fully non-smoking indoors; smoking is permitted in the courtyard until 22:00 and on the private terraces of the suites. Quiet hours are from 22:30 to 7:30, and the courtyard tables close at 22:30 out of respect for the rooms above. Luggage storage is free on arrival and departure days. Paris charges a tourist tax per person per night, which is not included in the room rate and is paid at the hotel; guests under 18 are exempt. Reception confirms the current amount. Prices are quoted in euros.

@@ -1,0 +1,15 @@
+# Telnyx Edge manifest for the TelnyxHotel voice concierge (ids are resource handles, not secrets).
+# Copy to edge/func.toml, create the function once (its id goes below), then build and ship: npm run edge:ship
+#
+# No storage binding on purpose: a function bound to a SQL database must run on the
+# one Edge site that hosts that database, while an unbound function is deployed to
+# every site (Amsterdam included) and guests are served from a nearby one. The app
+# reaches its database over the REST API instead (db.js, TELNYXHOTEL_SQLDB_ID).
+#
+# Settings are account secrets with a TELNYXHOTEL_ prefix (secrets are shared by every
+# function in the account): TELNYXHOTEL_TELNYX_API_KEY, TELNYXHOTEL_TELNYX_ASSISTANT_ID,
+# TELNYXHOTEL_SQLDB_ID, TELNYXHOTEL_ADMIN_EMAIL, TELNYXHOTEL_ADMIN_PASSWORD,
+# optional TELNYXHOTEL_SESSION_SECRET / TELNYXHOTEL_SMTP_*.
+[edge_compute]
+func_id = "<your-function-id>"   # from: npm run edge -- create telnyxhotel-concierge (or the Portal)
+func_name = "telnyxhotel-concierge"

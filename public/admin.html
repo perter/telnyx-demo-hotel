@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users & access — TelnyxHotel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="console.css">
+</head>
+<body class="console">
+  <header id="topbar"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Users & access</h1>
+        <p class="muted">Create accounts and choose which pages each user can open. Users only ever see their own calls and messages. <strong>Admin</strong> grants everything, including the back office (users, AI Assistant, e-mail, SMS / WhatsApp) and everyone's history. <strong>Video avatar</strong> shows the receptionist on video in that user's calls (beta, billed per minute; it needs an avatar set up in <a href="/assistant.html">AI Assistant</a>).</p>
+      </div>
+      <button class="btn ghost" id="myPasswordBtn" type="button">Change my password</button>
+    </div>
+
+    <section class="card">
+      <h2>New user</h2>
+      <form id="createForm" novalidate>
+        <div class="form-grid">
+          <label class="field">Name <input type="text" name="name" required maxlength="80" autocomplete="off"></label>
+          <label class="field">E-mail <input type="email" name="email" required autocomplete="off"></label>
+          <label class="field">Password <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="at least 8 characters"></label>
+        </div>
+        <div style="margin-top:14px">
+          <div class="muted" style="font-size:13px;margin-bottom:6px">Page access</div>
+          <div class="perm-list" id="createPerms"></div>
+        </div>
+        <label class="perm" style="margin-top:10px"><input type="checkbox" name="avatar"> Video avatar on this user's calls</label>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:14px;flex-wrap:wrap">
+          <button class="btn" type="submit">Create user</button>
+          <p class="form-error" id="createError" role="alert"></p>
+        </div>
+      </form>
+    </section>
+
+    <section class="card flush">
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>User</th><th>Page access</th><th>Video avatar</th><th>Created</th><th></th></tr></thead>
+          <tbody id="users"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <p class="form-ok" id="saved" role="status" aria-live="polite"></p>
+  </main>
+
+  <dialog id="editDialog">
+    <form method="dialog" id="editForm" novalidate>
+      <h2>Edit user</h2>
+      <label class="field">Name <input type="text" name="name" required maxlength="80"></label>
+      <label class="field">E-mail <input type="email" name="email" required></label>
+      <label class="field">New password <input type="password" name="password" autocomplete="new-password" placeholder="leave empty to keep the current one"></label>
+      <p class="muted" style="margin:0;font-size:13px">Setting a new password signs the user out everywhere.</p>
+      <p class="form-error" id="editError" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="btn ghost" type="button" data-close>Cancel</button>
+        <button class="btn" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="pwDialog">
+    <form method="dialog" id="pwForm" novalidate>
+      <h2>Change my password</h2>
+      <label class="field">Current password <input type="password" name="current" autocomplete="current-password" required></label>
+      <label class="field">New password <input type="password" name="next" autocomplete="new-password" minlength="8" required></label>
+      <p class="form-error" id="pwError" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="btn ghost" type="button" data-close>Cancel</button>
+        <button class="btn" type="submit">Change</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="account.js"></script>
+  <script src="ui.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TelnyxHotel — Book your stay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Jost:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="reception.css">
+</head>
+<body>
+  <!-- ============ Header ============ -->
+  <header id="siteHeader" class="site-header">
+    <a class="logo" href="/" title="TelnyxHotel"><span class="logo-word">Telnyx<b>Hotel</b></span></a>
+    <nav class="main-nav" aria-label="Menu">
+      <a href="#hotels" data-i18n="nav.hospitality">Hotels</a>
+      <a href="#hotels" data-i18n="nav.destinations">Destinations</a>
+      <a href="#concierge" data-i18n="nav.reception">Virtual front desk</a>
+    </nav>
+    <div class="header-actions">
+      <span class="demo-badge" data-i18n="header.demo" data-i18n-attr="title:header.demoTitle" title="Demo built with Telnyx">Telnyx demo</span>
+      <span class="lang-code" data-i18n-lang>IT</span>
+      <a class="btn btn-light" href="#book" data-i18n="header.book">Book now</a>
+    </div>
+  </header>
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="hero-bg" role="img" data-i18n-attr="aria-label:hero.alt" aria-label="A TelnyxHotel lobby"></div>
+    <div class="hero-content">
+      <p class="eyebrow" data-i18n="hero.eyebrow">City hotels in Europe and the United States</p>
+      <h1 data-i18n="hero.title">TelnyxHotel, your room is one conversation away</h1>
+      <p class="hero-sub" data-i18n="hero.sub">Book your stay however you like: with the form, or by talking to our front desk in English, French, German, Italian, Spanish or Dutch.</p>
+      <button type="button" class="btn btn-voice" data-open-concierge>
+        <span class="pulse-dot" aria-hidden="true"></span> <span data-i18n="hero.voiceCta">Book with your voice</span>
+      </button>
+    </div>
+
+    <!-- Booking bar: filled live by the receptionist, editable by hand -->
+    <form id="bookingBar" class="booking-bar" autocomplete="off" data-i18n-attr="aria-label:bar.aria" aria-label="Book your stay">
+      <label class="bar-cell">
+        <span class="bar-label" data-i18n="bar.property">Hotel</span>
+        <select id="barHotel">
+          <option value="" data-i18n="bar.selectProperty">Select a hotel</option>
+        </select>
+      </label>
+      <label class="bar-cell">
+        <span class="bar-label" data-i18n="bar.checkIn">Check-in</span>
+        <input id="barCheckIn" type="date">
+      </label>
+      <label class="bar-cell">
+        <span class="bar-label" data-i18n="bar.checkOut">Check-out</span>
+        <input id="barCheckOut" type="date">
+      </label>
+      <div class="bar-cell guests-cell">
+        <span class="bar-label" data-i18n="bar.guests">Guests</span>
+        <div class="guests-inputs">
+          <label><select id="barAdults" data-i18n-attr="aria-label:bar.adults" aria-label="Adults"></select> <span data-i18n="bar.adults">Adults</span></label>
+          <label><select id="barChildren" data-i18n-attr="aria-label:bar.children" aria-label="Children"></select> <span data-i18n="bar.children">Children</span></label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary bar-submit" data-i18n="bar.submit">Check availability</button>
+    </form>
+  </section>
+
+  <!-- ============ Booking ============ -->
+  <main id="book" class="booking-section">
+    <div class="section-head">
+      <p class="eyebrow dark" data-i18n="rooms.eyebrow">Your stay</p>
+      <h2 data-i18n="rooms.title">Choose your room</h2>
+    </div>
+
+    <div class="booking-layout">
+      <section class="rooms" aria-labelledby="roomsTitle">
+        <h3 id="roomsTitle" class="visually-hidden" data-i18n="rooms.available">Available rooms</h3>
+        <div id="roomsEmpty" class="rooms-empty">
+          <p><span data-i18n="rooms.emptyPre">Select hotel, dates and guests, then press</span> <strong data-i18n="bar.submit">Check availability</strong><span data-i18n="rooms.emptyPost">, or</span></p>
+          <button type="button" class="btn btn-outline" data-open-concierge data-i18n="rooms.ask">🎙️ ask the front desk</button>
+        </div>
+        <div id="availability" class="availability" hidden>
+          <ul id="availabilityList" class="room-list"></ul>
+          <p class="fineprint" data-i18n="rooms.fineprint">Prices per room per night, breakfast and taxes included. Demo data.</p>
+        </div>
+      </section>
+
+      <aside class="summary" aria-labelledby="bookingTitle">
+        <div id="summaryPhoto" class="summary-photo"></div>
+        <div class="summary-body">
+          <div class="summary-head">
+            <h3 id="bookingTitle" data-i18n="summary.title">Your stay</h3>
+            <span id="bookingState" class="pill idle" data-i18n="pill.waiting">Not started</span>
+          </div>
+          <ol id="steps" class="steps" data-i18n-attr="aria-label:steps.aria" aria-label="Booking progress">
+            <li data-step="hotel"><span class="dot"></span><span data-i18n="steps.hotel">Hotel</span></li>
+            <li data-step="dates"><span class="dot"></span><span data-i18n="steps.dates">Dates</span></li>
+            <li data-step="guests"><span class="dot"></span><span data-i18n="steps.guests">Guests</span></li>
+            <li data-step="room"><span class="dot"></span><span data-i18n="steps.room">Room</span></li>
+            <li data-step="contact"><span class="dot"></span><span data-i18n="steps.contact">Details</span></li>
+            <li data-step="confirm"><span class="dot"></span><span data-i18n="steps.confirm">Confirmation</span></li>
+          </ol>
+          <dl class="booking-fields">
+            <div data-field="hotel" class="wide"><dt data-i18n="field.hotel">Hotel</dt><dd>—</dd></div>
+            <div data-field="check_in"><dt data-i18n="field.check_in">Check-in</dt><dd>—</dd></div>
+            <div data-field="check_out"><dt data-i18n="field.check_out">Check-out</dt><dd>—</dd></div>
+            <div data-field="nights"><dt data-i18n="field.nights">Nights</dt><dd>—</dd></div>
+            <div data-field="guests"><dt data-i18n="field.guests">Guests</dt><dd>—</dd></div>
+            <div data-field="room_type" class="wide"><dt data-i18n="field.room_type">Room</dt><dd>—</dd></div>
+            <div data-field="guest_name"><dt data-i18n="field.guest_name">Name</dt><dd>—</dd></div>
+            <div data-field="contact"><dt data-i18n="field.contact">Contact</dt><dd>—</dd></div>
+            <div data-field="special_requests" class="wide"><dt data-i18n="field.special_requests">Requests</dt><dd>—</dd></div>
+            <div data-field="total" class="wide total"><dt data-i18n="field.total">Total stay</dt><dd>—</dd></div>
+          </dl>
+          <div id="confirmation" class="confirmation" hidden>
+            <p class="confirm-title" data-i18n="confirm.title">Booking confirmed</p>
+            <p class="confirm-code"><span data-i18n="confirm.code">Code</span> <strong id="confirmCode"></strong></p>
+            <p id="recapInfo" class="recap-info" hidden></p>
+            <p id="smsInfo" class="recap-info" hidden></p>
+          </div>
+          <button type="button" class="btn btn-primary btn-block" data-open-concierge id="summaryCta" data-i18n="summary.cta">Finish with the front desk</button>
+          <p class="fineprint" data-i18n="summary.fineprint">Demo: no real booking is made.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ============ Hotels ============ -->
+  <section id="hotels" class="hotels">
+    <div class="section-head">
+      <p class="eyebrow dark" data-i18n="hotels.eyebrow">Hotels</p>
+      <h2 data-i18n="hotels.title">Our hotels</h2>
+    </div>
+    <!-- One card per hotel in Booking.HOTELS, rendered by reception.js -->
+    <div id="hotelGrid" class="hotel-grid"></div>
+  </section>
+
+  <!-- ============ Concierge band ============ -->
+  <section id="concierge" class="concierge-band">
+    <div class="band-content">
+      <p class="eyebrow" data-i18n="band.eyebrow">Virtual front desk</p>
+      <h2 data-i18n="band.title">Our front desk, just a voice away</h2>
+      <ul class="band-points">
+        <li data-i18n="band.p1">Speak English, French, German, Italian, Spanish or Dutch: the front desk answers in your language.</li>
+        <li data-i18n="band.p2">Live availability and prices, filled into the form for you.</li>
+        <li data-i18n="band.p3">Instant confirmation and a recap by e-mail.</li>
+      </ul>
+      <div class="band-actions">
+        <button type="button" class="btn btn-light" data-open-concierge data-i18n="band.cta">🎙️ Talk to the front desk</button>
+        <a class="btn btn-ghost-light" href="/flow.html" target="_blank" rel="noopener" data-i18n="band.how">How it works ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Footer ============ -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <a class="logo" href="/" title="TelnyxHotel"><span class="logo-word">Telnyx<b>Hotel</b></span></a>
+      <p class="footer-claim" data-i18n="footer.claim">Ten hotels, six cities, one front desk</p>
+    </div>
+    <div class="footer-cols">
+      <div><h4 data-i18n="hotels.eyebrow">Hotels</h4><a href="#hotels" data-i18n="footer.all">All hotels</a><a href="#book" data-i18n="header.book">Book now</a></div>
+      <div><h4 data-i18n="nav.destinations">Destinations</h4><a href="#hotels" data-i18n="city.chicago">Chicago</a><a href="#hotels" data-i18n="city.rome">Rome</a><a href="#hotels" data-i18n="city.paris">Paris</a><a href="#hotels" data-i18n="city.munich">Munich</a><a href="#hotels" data-i18n="city.madrid">Madrid</a><a href="#hotels" data-i18n="city.amsterdam">Amsterdam</a></div>
+      <div><h4 data-i18n="footer.reception">Front desk</h4><a href="#concierge" data-i18n="nav.reception">Virtual front desk</a><a href="/flow.html" target="_blank" rel="noopener" data-i18n="footer.how">How it works</a></div>
+    </div>
+    <p class="footer-note" data-i18n="footer.note">Demo built with Telnyx AI Assistants · Telnyx Ultra voices in expressive mode. TelnyxHotel is a fictional hotel chain: hotels, prices and availability are invented.</p>
+  </footer>
+
+  <!-- ============ Voice concierge widget ============ -->
+  <button id="launcher" class="launcher" type="button" data-open-concierge aria-controls="concierge-panel" aria-expanded="false">
+    <span class="launcher-icon" aria-hidden="true">🎙️</span>
+    <span class="launcher-text" data-i18n="widget.launcher">Talk to the front desk</span>
+  </button>
+
+  <section id="concierge-panel" class="concierge" hidden aria-labelledby="conciergeTitle">
+    <header class="c-head">
+      <div id="avatar" class="avatar" aria-hidden="true">T</div>
+      <div class="c-title">
+        <h2 id="conciergeTitle"><span id="agentLabel">Reception</span></h2>
+        <p data-i18n="widget.subtitle">Front desk</p>
+      </div>
+      <div class="c-status">
+        <div id="langBadge" class="lang-badge" hidden role="status" aria-live="polite">
+          <span class="flag-stack"></span>
+          <span class="lang-names"></span>
+        </div>
+        <span id="callState" class="pill idle" data-i18n="pill.ready">Ready</span>
+      </div>
+      <button id="closeConcierge" class="icon-btn" type="button" data-i18n-attr="aria-label:widget.minimise" aria-label="Minimise">✕</button>
+    </header>
+
+    <!-- Video avatar (beta): shown only on calls with the avatar turned on -->
+    <div id="avatarStage" class="avatar-stage" hidden>
+      <video id="avatarVideo" playsinline muted></video>
+      <p class="avatar-wait" data-i18n="video.connecting">Connecting the video…</p>
+    </div>
+
+    <div id="chat" class="chat" aria-live="polite">
+      <div class="chat-empty">
+        <p class="welcome" data-i18n="chat.welcome">Welcome to TelnyxHotel! 👋</p>
+        <p><span data-i18n="chat.hintPre">Press</span> <strong data-i18n="chat.hintCall">Call</strong> <span data-i18n="chat.hintPost">and talk to the front desk:</span> <em data-i18n="chat.example">“I'd like a room in Amsterdam for two people, from 10 to 14 October.”</em></p>
+        <p class="muted" data-i18n="chat.other">You can switch language at any time during the call.</p>
+      </div>
+    </div>
+
+    <div class="c-setup">
+      <p class="small-label" data-i18n="setup.title">Before you call</p>
+      <div class="setup-grid">
+        <label class="setup-field"><span data-i18n="lang.label">Language</span>
+          <select id="langSelect" disabled><option data-i18n="voice.loading">Loading voices…</option></select>
+        </label>
+        <label class="setup-field"><span data-i18n="voice.label">Receptionist voice</span>
+          <select id="voice" disabled><option data-i18n="voice.loading">Loading voices…</option></select>
+        </label>
+      </div>
+      <div class="voice-row">
+        <p id="voiceInfo" class="voice-info"></p>
+        <button id="previewBtn" class="btn btn-outline btn-small" type="button" data-i18n="voice.preview" disabled>▶ Listen</button>
+      </div>
+    </div>
+
+    <div class="meters" aria-hidden="true">
+      <div class="meter"><span data-i18n="meters.you">You</span><div class="bar"><i id="micLevel"></i></div></div>
+      <div class="meter"><span data-i18n="meters.agent">Front desk</span><div class="bar agent"><i id="agentLevel"></i></div></div>
+    </div>
+
+    <div class="c-controls">
+      <button id="callBtn" class="call-btn" type="button" disabled>
+        <span class="call-icon" aria-hidden="true">📞</span>
+        <span class="call-label" data-i18n="call.start">Call the front desk</span>
+      </button>
+      <button id="muteBtn" class="btn btn-outline btn-small" type="button" data-i18n="mic.on" hidden>🎙️ Microphone on</button>
+    </div>
+
+    <form id="textForm" class="text-form" autocomplete="off">
+      <input id="textInput" type="text" data-i18n-attr="placeholder:text.placeholder" placeholder="Type a message…" disabled>
+      <button class="btn btn-primary btn-small" type="submit" data-i18n="text.send" disabled>Send</button>
+    </form>
+    <p id="status" class="status" aria-live="polite"></p>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="account.js" data-menu></script>
+  <script src="i18n.js"></script>
+  <script src="i18n/en.js"></script>
+  <script src="i18n/fr.js"></script>
+  <script src="i18n/de.js"></script>
+  <script src="i18n/it.js"></script>
+  <script src="i18n/es.js"></script>
+  <script src="i18n/nl.js"></script>
+  <script src="booking.js"></script>
+  <script src="lang.js"></script>
+  <script src="transcript.js"></script>
+  <script src="reception.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>

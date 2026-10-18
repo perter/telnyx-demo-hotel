@@ -1,0 +1,98 @@
+/* Telnyx look shared by every page but the booking site: fonts, colors, the
+   logo and the top bar. Page styles: console.css (back office, login), flow.css. */
+:root {
+  --tx-black: #000000;
+  --tx-green: #00e3aa;
+  --tx-green-ink: #00a67c;
+  --tx-cream: #fefdf5;
+  --tx-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --topbar-h: 56px;
+}
+
+.telnyx-logo {
+  display: inline-block; width: 74px; height: 23px; flex: none; background: currentColor;
+  -webkit-mask: url(/assets/telnyx.svg) no-repeat center / contain; mask: url(/assets/telnyx.svg) no-repeat center / contain;
+}
+.brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+.brand .tagline { padding-left: 12px; border-left: 1px solid currentColor; font: 600 15px/1 var(--tx-sans); letter-spacing: -.01em; color: var(--tx-green); border-color: rgba(254, 253, 245, .3); }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20; min-height: var(--topbar-h); box-sizing: border-box;
+  display: flex; align-items: center; gap: 24px; padding: 0 24px;
+  background: var(--tx-black); color: var(--tx-cream); font: 400 14px/1.4 var(--tx-sans);
+}
+.topbar nav { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0; }
+.topbar nav a {
+  position: relative; padding: 18px 10px; text-decoration: none; color: inherit; opacity: .72; white-space: nowrap; font-weight: 500;
+}
+.topbar nav a:hover { opacity: 1; }
+.topbar nav a[aria-current=page] { opacity: 1; }
+.topbar nav a[aria-current=page]::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--tx-green); }
+.topbar .nav-group { display: flex; gap: 2px; margin-left: 14px; padding-left: 14px; border-left: 1px solid rgba(254, 253, 245, .2); }
+.topbar .who { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; opacity: .85; white-space: nowrap; }
+.topbar .av { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--tx-green); color: var(--tx-black); font-size: 11px; font-weight: 700; }
+.topbar .btn.ghost, .topbar button {
+  font: 500 13px var(--tx-sans); padding: 5px 12px; border-radius: 999px; cursor: pointer;
+  background: transparent; color: var(--tx-cream); border: 1px solid rgba(254, 253, 245, .3);
+}
+.topbar .btn.ghost:hover { border-color: var(--tx-green); color: var(--tx-green); background: transparent; }
+
+@media (max-width: 900px) {
+  .topbar { flex-wrap: wrap; gap: 0 16px; padding: 8px 16px 0; }
+  .topbar .brand { flex: 1; }
+  .topbar nav { order: 3; flex: 1 0 100%; overflow-x: auto; scrollbar-width: none; }
+  .topbar nav a { padding: 12px 10px; }
+  .topbar .who { display: none; }
+}
+
+/* Help column (ui.js): a tab on the right edge, opened into a right column. */
+.help {
+  --h-bg: #ffffff; --h-ink: #111111; --h-muted: #6b6b66; --h-line: #e4e2d6; --h-soft: #f3f2e9;
+  font: 400 14px/1.5 var(--tx-sans); color: var(--h-ink);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .help:not(.light) { --h-bg: #151515; --h-ink: var(--tx-cream); --h-muted: #9b9a92; --h-line: #2b2b2b; --h-soft: #1f1f1f; }
+}
+.help-toggle {
+  position: fixed; right: 0; top: calc(var(--help-top, 0px) + 96px); z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 10px 7px; border: 0; border-radius: 10px 0 0 10px; cursor: pointer;
+  background: var(--tx-black); color: var(--tx-cream); font: 700 14px/1 var(--tx-sans); box-shadow: 0 4px 14px rgba(0,0,0,.25);
+}
+.help-toggle span { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 500; font-size: 13px; letter-spacing: .04em; }
+.help-toggle:hover, .help-toggle[aria-expanded="true"] { background: var(--tx-green); color: var(--tx-black); }
+.help-toggle[aria-expanded="true"] { right: min(360px, 100vw - 34px); }
+.help-body {
+  position: fixed; right: 0; top: var(--help-top, 0px); bottom: 0; z-index: 24; width: min(360px, 100vw); overflow-y: auto; box-sizing: border-box;
+  padding: 18px 20px 24px; background: var(--h-bg); border-left: 1px solid var(--h-line); box-shadow: -8px 0 30px rgba(0,0,0,.12);
+}
+.help-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.help-head h2 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.help-close { border: 0; background: none; color: var(--h-muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 0 4px; }
+.help h3 { margin: 18px 0 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--h-muted); }
+.help details { border-bottom: 1px solid var(--h-line); }
+.help summary { cursor: pointer; padding: 10px 0; font-weight: 600; }
+.help summary::marker { color: var(--tx-green-ink); }
+.help details p { margin: 0 0 12px; color: var(--h-muted); }
+.help-nav, .help-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.help-nav a, .help-steps a { color: var(--h-ink); font-weight: 600; text-decoration: none; }
+.help-nav li { padding: 7px 10px; border-radius: 8px; }
+.help-nav li:has(a[aria-current]) { background: var(--h-soft); box-shadow: inset 3px 0 0 var(--tx-green); }
+.help-nav a:hover, .help-steps a:hover { color: var(--tx-green-ink); }
+.help-nav small { display: block; color: var(--h-muted); font-size: 12.5px; }
+.help-steps { counter-reset: step; gap: 8px; }
+.help-steps li { counter-increment: step; position: relative; padding-left: 30px; color: var(--h-muted); font-size: 13px; }
+.help-steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--h-soft); color: var(--h-ink); font-size: 11px; font-weight: 700; }
+.help-steps li.here::before { background: var(--tx-green); color: var(--tx-black); }
+body:has(.topbar) { --help-top: var(--topbar-h); }
+@media (min-width: 1100px) {
+  body.help-open:has(.topbar) > main, body.help-open:has(.topbar) > .app, body.help-open:has(.topbar) > .app-footer { margin-right: 360px; }
+}
+
+/* Version footer (ui.js) */
+.app-footer { padding: 18px 24px 22px; text-align: center; }
+.app-version { margin: 0; font: 400 12px/1.4 var(--tx-sans); color: #8a897f; }
+.site-footer .app-version { margin-top: 18px; color: rgba(255,255,255,.55); }
+.auth-page .app-footer { position: fixed; left: 12px; bottom: 0; padding: 8px 0; }
+.auth-page .app-version { color: rgba(254,253,245,.5); font-size: 11px; }
+body:has(> .app) .app-footer { position: fixed; left: 16px; bottom: 0; padding: 0 0 3px; z-index: 5; }
+body:has(> .app) .app-version { color: rgba(254,253,245,.45); font-size: 11px; }

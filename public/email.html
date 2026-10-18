@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-mail — TelnyxHotel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="console.css">
+</head>
+<body class="console">
+  <header id="topbar"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>E-mail</h1>
+        <p class="muted">The booking recap a guest receives when the receptionist confirms a reservation, sent with the Telnyx Email API.</p>
+      </div>
+    </div>
+    <p class="form-error" id="loadError" role="alert"></p>
+
+    <div class="grid-2">
+      <section class="card" id="setupCard">
+        <div class="card-head">
+          <h2>Setup</h2>
+          <span class="chip" id="stateChip" hidden></span>
+        </div>
+        <form id="setupForm" autocomplete="off">
+          <label class="check"><input type="checkbox" id="enabled"> Send the booking recap with Telnyx Email</label>
+          <label class="field">Sender address
+            <input type="email" id="from" list="senders" placeholder="frontdesk@your-domain.com" maxlength="254">
+            <datalist id="senders"></datalist>
+          </label>
+          <label class="field">Sender name
+            <input type="text" id="fromName" maxlength="80" placeholder="TelnyxHotel front desk">
+          </label>
+          <label class="field">Reply-to <span class="muted hint">— optional; where a guest's reply goes</span>
+            <input type="email" id="replyTo" maxlength="254">
+          </label>
+          <label class="field">Send every e-mail to this address instead <span class="muted hint">— optional; for demos, since spoken addresses are often mis-transcribed</span>
+            <input type="email" id="overrideTo" maxlength="254">
+          </label>
+          <label class="check"><input type="checkbox" id="sandbox"> Sandbox mode <span class="muted hint">— Telnyx accepts and logs each message but delivers nothing</span></label>
+          <div class="save-row">
+            <button class="btn" type="submit" id="saveBtn">Save setup</button>
+            <p class="form-error" id="saveError" role="alert"></p>
+            <p class="form-ok" id="saveOk" role="status"></p>
+          </div>
+        </form>
+        <p class="muted hint" id="fallbackNote"></p>
+      </section>
+
+      <div>
+        <section class="card">
+          <h2>Sending domains</h2>
+          <p class="muted hint">From your Telnyx account. A verified domain of your own can send from any address to anyone. A shared domain sends only from its <code>onboarding@</code> address, and only to the account owner's own e-mail.</p>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Domain</th><th>Type</th><th>Status</th><th>Sender</th></tr></thead>
+              <tbody id="domains"><tr><td colspan="4" class="empty">—</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Send a test</h2>
+          <form id="testForm" class="save-row" autocomplete="off">
+            <input type="email" id="testTo" placeholder="you@your-domain.com" maxlength="254" required style="flex:1;min-width:220px">
+            <button class="btn ghost" type="submit" id="testBtn">Send test e-mail</button>
+          </form>
+          <p class="form-error" id="testError" role="alert"></p>
+          <p class="form-ok" id="testOk" role="status"></p>
+          <p class="muted hint">Uses the saved setup, so save first.</p>
+        </section>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Sent by this demo</h2>
+          <p class="muted hint">The latest messages, as Telnyx reports them. Message bodies are not shown.</p>
+        </div>
+        <button class="btn ghost small" type="button" id="reloadBtn">Reload</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>When</th><th>To</th><th>Subject</th><th>Kind</th><th>Status</th></tr></thead>
+          <tbody id="messages"><tr><td colspan="5" class="empty">—</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script src="account.js"></script>
+  <script src="ui.js"></script>
+  <script src="email.js"></script>
+</body>
+</html>
