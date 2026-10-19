@@ -585,6 +585,90 @@ describe("client-side", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+describe("guest (no account)", () => {
+  let guest, guestId, admin;
+
+  before(async () => {
+    admin = (await login(ADMIN.email, ADMIN.password)).cookie;
+    const res = await fetch(`${BASE}/api/auth/guest`, { method: "POST" });
+    assert.equal(res.status, 200);
+    const setCookie = res.headers.get("set-cookie");
+    assert.match(setCookie, /^telnyxhotel_session=.*HttpOnly.*SameSite=Lax/);
+    guest = setCookie.split(";")[0];
+    guestId = (await res.json()).user.id;
+  });
+
+  test("the login page offers it, and it starts a session of its own", async () => {
+    assert.deepEqual(await (await fetch(`${BASE}/api/auth/guest`)).json(), { enabled: true });
+    const { user, pages } = await (await api(guest, "GET", "/api/auth/me")).json();
+    assert.match(guestId, /^g_[0-9a-f]{12}$/);
+    assert.equal(user.guest, true);
+    assert.equal(user.isAdmin, false);
+    assert.equal(user.avatar, true, "video avatar on (when the assistant has one)");
+    assert.deepEqual(pages.map((p) => p.href), ["/", "/flow.html"]);
+    const other = (await (await fetch(`${BASE}/api/auth/guest`, { method: "POST" })).json()).user.id;
+    assert.notEqual(other, guestId, "every guest is someone else");
+  });
+
+  test("only the booking site and how it works: no history, no back office, no password", async () => {
+    for (const p of ["/", "/flow.html"]) assert.equal((await api(guest, "GET", p)).status, 200, p);
+    for (const p of ["/history.html", ...ADMIN_PAGES]) assert.equal((await api(guest, "GET", p)).status, 403, p);
+    for (const [m, url] of [...ADMIN_APIS, ["GET", "/api/calls"], ["GET", "/api/calls/c_x"], ["DELETE", "/api/calls/c_x"], ["GET", "/api/messages"]]) {
+      const r = await api(guest, m, url, ["POST", "PATCH", "PUT"].includes(m) ? { pages: ["admin"], enabled: false } : undefined);
+      assert.equal(r.status, 403, `${m} ${url}`);
+    }
+    assert.equal((await api(guest, "POST", "/api/auth/password", { current: "", next: "new-pass-1234" })).status, 403);
+  });
+
+  test("nothing is sent by e-mail, SMS or WhatsApp", async () => {
+    await api(admin, "PUT", "/api/admin/sms", { enabled: true, from: "+15550001111", overrideTo: "" });
+    const before = (await (await api(admin, "GET", "/api/admin/sms")).json()).messages.length;
+    const booking = { ...(await freeStay()), email: "ada@example.com", phone: "+447700900123" };
+    const recap = await (await api(guest, "POST", "/api/booking-recap", { booking, code: "THGUEST1", lang: "en" })).json();
+    assert.equal(recap.sent, false);
+    assert.equal(recap.guest, true);
+    assert.equal(recap.preview_url, undefined, "not even a preview");
+    const sms = await (await api(guest, "POST", "/api/booking-sms", { booking, code: "THGUEST1", lang: "en" })).json();
+    assert.deepEqual([sms.sent, sms.reason_code], [false, "guest"]);
+    assert.equal((await (await api(admin, "GET", "/api/admin/sms")).json()).messages.length, before, "nothing logged as sent");
+    await api(admin, "PUT", "/api/admin/sms", { enabled: false });
+  });
+
+  test("forged or tampered guest sessions are rejected", async () => {
+    const forge = (data) => `telnyxhotel_session=${Buffer.from(JSON.stringify(data)).toString("base64url")}.AAAA`;
+    assert.equal((await api(forge({ gid: "g_000000000000", exp: Date.now() + 1e9 }), "GET", "/api/auth/me")).status, 401);
+    const [payload, sig] = guest.split("=")[1].split(".");
+    const admin = Buffer.from(JSON.stringify({ ...JSON.parse(Buffer.from(payload, "base64url")), uid: "u_x" })).toString("base64url");
+    assert.equal((await api(`telnyxhotel_session=${admin}.${sig}`, "GET", "/api/auth/me")).status, 401);
+  });
+
+  test("English only, and the admins see the guest's calls", async (t) => {
+    const res = await api(guest, "GET", "/api/concierge");
+    if (res.status !== 200) return t.skip("no Telnyx voice list (TELNYX_API_KEY missing or offline)");
+    const concierge = await res.json();
+    assert.deepEqual(concierge.languages.map((l) => l.code), ["en"]);
+    assert.equal(concierge.defaultLanguage, "en");
+    assert.equal((await api(guest, "PUT", "/api/prefs", { lang: "it" })).status, 400);
+    assert.equal((await api(guest, "PUT", "/api/prefs", { lang: "en" })).status, 200);
+
+    // A call with a voice that doesn't exist is refused at the voice check, and still recorded.
+    await new Promise((resolve) => {
+      const ws = new WebSocket(`ws://localhost:${PORT}/ws/assistant`, { headers: { Cookie: `${guest}; telnyxhotel_prefs=${guestId}|en|Nope.voice` } });
+      ws.on("close", resolve);
+      ws.on("error", resolve);
+    });
+    let calls = [];
+    for (let i = 0; i < 20 && !calls.length; i++) {
+      calls = (await (await api(admin, "GET", `/api/calls?user=${guestId}`)).json()).calls;
+      if (!calls.length) await new Promise((r) => setTimeout(r, 150));
+    }
+    assert.equal(calls.length, 1);
+    assert.deepEqual([calls[0].user.id, calls[0].user.name], [guestId, "Guest"]);
+    await api(admin, "DELETE", `/api/calls/${calls[0].id}`);
+  });
+});
+
 // Rate limit last: it locks this IP out of logins for 15 minutes.
 describe("brute force", () => {
   test("logins are rate-limited per IP", async () => {

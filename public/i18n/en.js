@@ -90,6 +90,8 @@ I18N.extend({
     "recap.sending": "📧 Sending the recap…", "recap.sent": "📧 Recap sent to {to}",
     "recap.preview": "📧 Recap ready (preview, Telnyx Email not configured)",
     "recap.none": "🔕 No recap e-mail: the guest didn't leave an address.",
+    "guest.note": "Guest demo: English only, and no e-mail, SMS or WhatsApp is sent. With an account you get all six languages and the booking confirmations.",
+    "guest.notSent": "📧 Guest demo: no recap e-mail, SMS or WhatsApp was sent. With an account, the confirmations go out automatically.",
     "recap.error": "⚠️ Recap not sent: {error}", "recap.open": "Open the e-mail ↗",
     "sms.sending": "💬 Sending the confirmation SMS…", "sms.sent": "💬 Confirmation SMS sent to {to}", "sms.sentWhatsApp": "💬 Confirmation sent on WhatsApp to {to}",
     "sms.notMobile": "💬 No SMS: {number} is not a mobile number.", "sms.error": "⚠️ SMS not sent: {error}",

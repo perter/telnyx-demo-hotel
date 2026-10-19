@@ -267,6 +267,7 @@ a { color: inherit; }
 .setup-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 8px; }
 .setup-field { display: grid; gap: 3px; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); min-width: 0; }
 .small-label { display: block; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.guest-note { margin: 0; padding: 7px 9px; border-left: 3px solid var(--ok); background: #f3f6f4; font-size: 0.8rem; line-height: 1.4; color: var(--slate); }
 #langSelect, #voice, .text-form input { width: 100%; min-width: 0; padding: 7px 9px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: 0.9rem; letter-spacing: 0; text-transform: none; color: var(--slate); border-radius: 0; }
 #langSelect:focus, #voice:focus, .text-form input:focus { outline: none; border-color: var(--slate); }
 #langSelect:disabled, #voice:disabled { opacity: 0.6; }

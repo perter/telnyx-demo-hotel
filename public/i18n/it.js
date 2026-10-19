@@ -90,6 +90,8 @@ I18N.extend({
     "recap.sending": "📧 Invio del riepilogo in corso…", "recap.sent": "📧 Riepilogo inviato a {to}",
     "recap.preview": "📧 Riepilogo pronto (anteprima, Telnyx Email non configurato)",
     "recap.none": "🔕 Nessuna e-mail di riepilogo: l'ospite non ha lasciato un indirizzo.",
+    "guest.note": "Demo ospite: solo in inglese, e non viene inviata nessuna e-mail, SMS o WhatsApp. Con un account ha tutte e sei le lingue e le conferme di prenotazione.",
+    "guest.notSent": "📧 Demo ospite: nessuna e-mail di riepilogo, SMS o WhatsApp è stato inviato. Con un account, le conferme partono in automatico.",
     "recap.error": "⚠️ Riepilogo non inviato: {error}", "recap.open": "Apri l'e-mail ↗",
     "sms.sending": "💬 Invio dell'SMS di conferma…", "sms.sent": "💬 SMS di conferma inviato al {to}", "sms.sentWhatsApp": "💬 Conferma inviata su WhatsApp al {to}",
     "sms.notMobile": "💬 Nessun SMS: il {number} non è un numero di cellulare.", "sms.error": "⚠️ SMS non inviato: {error}",

@@ -90,6 +90,8 @@ I18N.extend({
     "recap.sending": "📧 Overzicht wordt verzonden…", "recap.sent": "📧 Overzicht verzonden naar {to}",
     "recap.preview": "📧 Overzicht klaar (preview, Telnyx Email niet geconfigureerd)",
     "recap.none": "🔕 Geen overzichtsmail: de gast heeft geen adres opgegeven.",
+    "guest.note": "Gastdemo: alleen in het Engels, en er wordt geen e-mail, sms of WhatsApp verstuurd. Met een account krijgt u alle zes talen en de boekingsbevestigingen.",
+    "guest.notSent": "📧 Gastdemo: er is geen overzichtsmail, sms of WhatsApp verstuurd. Met een account gaan de bevestigingen automatisch de deur uit.",
     "recap.error": "⚠️ Overzicht niet verzonden: {error}", "recap.open": "Open de e-mail ↗",
     "sms.sending": "💬 Bevestigings-sms wordt verzonden…", "sms.sent": "💬 Bevestigings-sms verzonden naar {to}", "sms.sentWhatsApp": "💬 Bevestiging via WhatsApp verzonden naar {to}",
     "sms.notMobile": "💬 Geen sms: {number} is geen mobiel nummer.", "sms.error": "⚠️ Sms niet verzonden: {error}",

@@ -11,5 +11,6 @@
 # TELNYXHOTEL_SQLDB_ID, TELNYXHOTEL_ADMIN_EMAIL, TELNYXHOTEL_ADMIN_PASSWORD,
 # optional TELNYXHOTEL_SESSION_SECRET / TELNYXHOTEL_SMTP_*.
 [edge_compute]
-func_id = "<your-function-id>"   # from: npm run edge -- create telnyxhotel-concierge (or the Portal)
+# The function id, from: npm run edge -- create telnyxhotel-concierge (or the Portal)
+func_id = "<your-function-id>"
 func_name = "telnyxhotel-concierge"

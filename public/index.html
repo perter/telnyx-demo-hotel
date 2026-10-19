@@ -199,12 +199,13 @@
       <div class="chat-empty">
         <p class="welcome" data-i18n="chat.welcome">Welcome to TelnyxHotel! 👋</p>
         <p><span data-i18n="chat.hintPre">Press</span> <strong data-i18n="chat.hintCall">Call</strong> <span data-i18n="chat.hintPost">and talk to the front desk:</span> <em data-i18n="chat.example">“I'd like a room in Amsterdam for two people, from 10 to 14 October.”</em></p>
-        <p class="muted" data-i18n="chat.other">You can switch language at any time during the call.</p>
+        <p id="langHint" class="muted" data-i18n="chat.other">You can switch language at any time during the call.</p>
       </div>
     </div>
 
     <div class="c-setup">
       <p class="small-label" data-i18n="setup.title">Before you call</p>
+      <p id="guestNote" class="guest-note" data-i18n="guest.note" hidden>Guest demo: English only, and no e-mail, SMS or WhatsApp is sent. With an account you get all six languages and the booking confirmations.</p>
       <div class="setup-grid">
         <label class="setup-field"><span data-i18n="lang.label">Language</span>
           <select id="langSelect" disabled><option data-i18n="voice.loading">Loading voices…</option></select>

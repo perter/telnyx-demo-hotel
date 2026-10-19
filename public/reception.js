@@ -33,6 +33,15 @@ const ui = {
 let concierge = null; // { defaultLanguage, languages: [{ code, name, label, greeting, defaultVoice, voices }] }
 let startLang = "en";
 
+// Guest demo (no account): English only, and nothing is sent to the guest.
+let guest = false;
+Account.ready.then(({ user }) => {
+  guest = !!user.guest;
+  $("guestNote").hidden = !guest;
+  $("langHint").hidden = guest;
+});
+const GUEST_NOT_SENT = "guest demo: nothing is sent. Tell the guest that with a TelnyxHotel demo account the recap e-mail and the SMS or WhatsApp confirmation are sent automatically";
+
 // Live events for the flow diagram page (/flow.html), if it's open.
 const flowChannel = "BroadcastChannel" in window ? new BroadcastChannel("telnyxhotel-flow") : null;
 function emitFlow(type, detail = {}) {
@@ -893,6 +902,10 @@ function setConfirmed(code) {
 // Ask the server to e-mail the booking recap in the language the guest is using.
 async function sendRecapEmail(code) {
   const lang = pageLang(call?.lang || startLang);
+  if (guest) {
+    showRecap(t("guest.notSent"));
+    return { sent: false, guest_demo: true, reason: GUEST_NOT_SENT };
+  }
   if (!booking.email) {
     showRecap(t("recap.none"));
     return { sent: false, reason: "no e-mail address on the booking — offer to add one" };
@@ -929,6 +942,7 @@ async function sendConfirmationSms(code) {
     ui.smsInfo.hidden = true;
     return { sent: false, reason: "no mobile number on the booking (optional)" };
   }
+  if (guest) return { sent: false, guest_demo: true, reason: GUEST_NOT_SENT };
   const key = `${code}|${phone}`;
   if (smsSentFor === key) return { sent: true, already_sent: true, to: phone };
   const lang = pageLang(call?.lang || startLang);

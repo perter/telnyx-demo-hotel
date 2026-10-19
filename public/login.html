@@ -33,6 +33,10 @@
       <p class="form-error" id="error" role="alert"></p>
       <button class="btn" type="submit">Sign in</button>
       <p class="muted" style="margin:0;font-size:13px">Accounts are created by an admin. Ask them for access.</p>
+      <div id="guestBox" hidden>
+        <button class="btn ghost" type="button" id="guestBtn" style="width:100%">Try it as a guest</button>
+        <p class="muted" style="margin:8px 0 0;font-size:13px">No account needed: English only, and no e-mail, SMS or WhatsApp is sent. With an account you get all six languages and the booking confirmations.</p>
+      </div>
     </form>
   </main>
   <p class="auth-credit">Photo: Tony Webster, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener">CC BY 2.0</a></p>
@@ -42,6 +46,23 @@
     const next = new URLSearchParams(location.search).get("next");
     // Only follow same-origin paths (never "//host", "/\\host", "http:…").
     const safeNext = next ? (() => { try { const u = new URL(next, location.origin); return u.origin === location.origin ? u.pathname + u.search + u.hash : null; } catch { return null; } })() : null;
+
+    // Guest access, when the server offers it: a session of its own, booking page only.
+    const guestBox = document.getElementById("guestBox");
+    fetch("/api/auth/guest").then((r) => r.json()).then((d) => { guestBox.hidden = !d.enabled; }).catch(() => {});
+    document.getElementById("guestBtn").addEventListener("click", async (e) => {
+      error.textContent = "";
+      e.target.disabled = true;
+      try {
+        const res = await fetch("/api/auth/guest", { method: "POST" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+        location.href = "/";
+      } catch (err) {
+        error.textContent = err.message;
+        e.target.disabled = false;
+      }
+    });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
