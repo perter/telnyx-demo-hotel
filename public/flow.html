@@ -47,7 +47,7 @@
         <div class="diagram-wrap">
           <svg id="diagram" viewBox="0 0 1140 700" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="dTitle dDesc">
           <title id="dTitle" data-i18n="flow.aria.diagram">Architecture of a call</title>
-          <desc id="dDesc" data-i18n="flow.aria.diagramDesc">Four zones: the client (the guest's browser) with microphone, playback, chat, booking tools and reservation card; the demo server, which holds the API key, relays messages, calls the Telnyx REST APIs and sends the recap e-mail; the Telnyx cloud with speech-to-text, LLM and text-to-speech; and the external resources the server can query.</desc>
+          <desc id="dDesc" data-i18n="flow.aria.diagramDesc">Four zones: the guest's browser (microphone, playback, chat, booking tools, reservation card); your server (login and preferences, the assistant's voice, the WebSocket relay, the call recorder, the recap e-mail and the SMS or WhatsApp confirmation); the Telnyx cloud (conversation, speech-to-text, LLM with its knowledge base, text-to-speech, AI Assistants API, SQL database, Email, Number Lookup and Messaging); and the guest's inbox and phone, with your booking systems.</desc>
           <defs>
             <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0b1a1c" flood-opacity="0.18"/>

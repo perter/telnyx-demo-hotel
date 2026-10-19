@@ -3,7 +3,7 @@
 // branch versions. Back-office help is English; the booking and flow pages
 // take theirs from the i18n files (help.* keys), so it follows the page language.
 (function () {
-  const FRONTEND_VERSION = "1.0.0";
+  const FRONTEND_VERSION = "1.1.0";
   const PAGE = { "/": "booking", "/index.html": "booking", "/flow.html": "flow", "/history.html": "history", "/admin.html": "admin",
     "/assistant.html": "assistant", "/email.html": "email", "/sms.html": "sms", "/login.html": "login" }[location.pathname] || "noaccess";
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);

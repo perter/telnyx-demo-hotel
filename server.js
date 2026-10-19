@@ -4,7 +4,8 @@
 //   /api/tts        Text-to-Speech (voice previews)
 //   /api/concierge  languages and Ultra voices offered to guests, /api/prefs the user's pick
 //   /api/booking-recap, /api/booking-sms   booking confirmations (Telnyx Email / Messaging)
-// Every page and API needs a login (auth.js). Calls are recorded for the history (calls.js).
+// Every page and API needs a login (auth.js), or a guest session: English only,
+// nothing sent to the guest. Calls are recorded for the history (calls.js).
 import express from "express";
 import { execFileSync } from "node:child_process";
 import crypto from "node:crypto";
@@ -15,8 +16,8 @@ import { fileURLToPath } from "node:url";
 import { WebSocket, WebSocketServer } from "ws";
 import { bookingFacts, buildSms, getPreview, recapMode, sendRecap } from "./recap.js";
 import {
-  GRANTS, allowedPages, attachUser, canAccess, changeOwnPassword, createUser, deleteUser, initAuth, isAdmin,
-  listUsers, login, logout, pageGate, publicUser, readCookie, refreshUsers, requirePage, setCookie, updateUser, userFromRequest,
+  GRANTS, allowedPages, attachUser, canAccess, changeOwnPassword, createUser, deleteUser, guestLogin, guestStatus, initAuth, isAdmin,
+  isGuest, listUsers, login, logout, pageGate, publicUser, readCookie, refreshUsers, requirePage, setCookie, updateUser, userFromRequest,
 } from "./auth.js";
 import { openDb } from "./db.js";
 import { onEdge, setting } from "./settings.js";
@@ -50,6 +51,7 @@ function startStorage() {
       // Without a configured secret, derive one from the API key (stable across restarts and instances).
       sessionSecret: setting("SESSION_SECRET") || crypto.createHmac("sha256", API_KEY).update("telnyxhotel-session").digest("base64url"),
       admin: { email: setting("ADMIN_EMAIL"), password: setting("ADMIN_PASSWORD"), name: setting("ADMIN_NAME") },
+      guests: setting("GUEST_ACCESS") !== "off",
     });
     initCalls(db);
     initConcierge(db);
@@ -118,6 +120,8 @@ const sendError = (res, err) => {
 app.get("/api/version", (_req, res) => res.json(VERSION));
 app.post("/api/auth/login", login);
 app.post("/api/auth/logout", logout);
+app.get("/api/auth/guest", guestStatus);
+app.post("/api/auth/guest", guestLogin);
 app.get("/api/auth/me", requirePage(), (req, res) => {
   res.json({ user: publicUser(req.user), pages: allowedPages(req.user) });
 });
@@ -247,8 +251,17 @@ const PREFS = "telnyxhotel_prefs";
 const voiceFor = (language, id) => (language.voices.some((v) => v.id === id) ? id
   : language.voices.some((v) => v.id === language.defaultVoice) ? language.defaultVoice : language.voices[0]?.id) ?? null;
 
+// Guests get English only.
+async function conciergeFor(user) {
+  const concierge = await publicConcierge(await assistantVoices());
+  if (!isGuest(user)) return concierge;
+  const languages = concierge.languages.filter((l) => l.code === "en");
+  if (!languages.length) throw Object.assign(new Error("The guest demo needs English, which is turned off"), { status: 503 });
+  return { defaultLanguage: "en", languages };
+}
+
 async function preferences(req, concierge) {
-  concierge ??= await publicConcierge(await assistantVoices());
+  concierge ??= await conciergeFor(req.user);
   const [uid, lang, voice] = String(readCookie(req.headers.cookie, PREFS) || "").split("|");
   const mine = uid === req.user.id;
   const language = (mine && concierge.languages.find((l) => l.code === lang)) || concierge.languages.find((l) => l.code === concierge.defaultLanguage);
@@ -258,7 +271,7 @@ async function preferences(req, concierge) {
 // Languages and voice shortlists for the booking page's pre-call step.
 app.get("/api/concierge", requirePage("booking"), async (req, res) => {
   try {
-    const concierge = await publicConcierge(await assistantVoices());
+    const concierge = await conciergeFor(req.user);
     res.json({ ...concierge, preferred: await preferences(req, concierge) });
   } catch (err) {
     console.error("Concierge settings failed:", err.message);
@@ -272,7 +285,7 @@ app.get("/api/prefs", requirePage("booking", "flow"), async (req, res) => {
 // { lang, voice }: without a voice (or with one not offered), the language's default.
 app.put("/api/prefs", requirePage("booking", "flow"), async (req, res) => {
   try {
-    const { languages } = await publicConcierge(await assistantVoices());
+    const { languages } = await conciergeFor(req.user);
     const language = languages.find((l) => l.code === req.body?.lang);
     const voice = language && voiceFor(language, req.body.voice);
     if (!voice) return res.status(400).json({ error: "This language is not offered" });
@@ -441,6 +454,10 @@ app.post("/api/booking-sms", requirePage("booking"), async (req, res) => {
     label: "Booking confirmation SMS", method: "POST", url: "/api/booking-sms", status, ok, ms: Date.now() - started, detail,
   });
   try {
+    if (isGuest(req.user)) {
+      log(200, true, { code, sent: false, reason: "guest demo" });
+      return res.json({ sent: false, reason_code: "guest", reason: "Nothing is sent in the guest demo" });
+    }
     if (!(await getSmsSettings()).enabled) {
       log(200, true, { code, sent: false, reason: "SMS is off" });
       return res.json({ sent: false, reason_code: "off", reason: "SMS confirmations are turned off" });
@@ -463,6 +480,13 @@ app.post("/api/booking-sms", requirePage("booking"), async (req, res) => {
 });
 
 app.post("/api/booking-recap", requirePage("booking"), async (req, res) => {
+  if (isGuest(req.user)) {
+    activeCallFor(req.user.id)?.http({
+      label: "Booking recap e-mail", method: "POST", url: "/api/booking-recap", status: 200, ok: true, ms: 0,
+      detail: { code: req.body?.code, sent: false, reason: "guest demo" },
+    });
+    return res.json({ sent: false, guest: true, reason: "Nothing is sent in the guest demo" });
+  }
   if (!recapAllowed(req.ip)) return res.status(429).json({ error: "Too many recap e-mails, try again later" });
   const { booking, code, lang } = req.body ?? {};
   const rec = activeCallFor(req.user.id); // log it on the call that confirmed the booking
@@ -497,6 +521,9 @@ app.get("/recap/:id", requirePage("booking"), (req, res) => {
 // simultaneous callers can't swap each other's voice.
 // ---------------------------------------------------------------------------
 let voiceLock = Promise.resolve();
+
+// Pause between a voice update and opening the conversation (see startAssistantCall).
+const VOICE_SETTLE_MS = 2000;
 
 function acquireVoiceLock() {
   let release;
@@ -566,10 +593,27 @@ async function handleUpgrade(req, socket, head) {
   if (!user) return rejectUpgrade(socket, 401, "Unauthorized");
   if (url.pathname === "/ws/assistant") {
     if (!canAccess(user, "booking")) return rejectUpgrade(socket, 403, "Forbidden");
+    if (isGuest(user) && guestCalls >= GUEST_MAX_CALLS) return rejectUpgrade(socket, 503, "Service Unavailable");
     req.user = user;
     return wss.handleUpgrade(req, socket, head, (client) => startAssistantCall(client, url.searchParams, user, req));
   }
   socket.destroy();
+}
+
+// Guest calls: a few at a time per instance, 5 minutes each, English only (the
+// page asks for it; the session.update is rewritten so a guest can't change it).
+const GUEST_MAX_CALLS = 3;
+const GUEST_CALL_MS = 5 * 60_000;
+let guestCalls = 0;
+
+function guestFrame(data, isBinary) {
+  if (isBinary) return data;
+  let ev;
+  try { ev = JSON.parse(data.toString()); } catch { return data; }
+  if (ev?.type !== "session.update") return data;
+  const assistant = { ...ev.session?.assistant };
+  assistant.dynamic_variables = { ...assistant.dynamic_variables, languages: "English", start_language: "English" };
+  return JSON.stringify({ ...ev, session: { ...ev.session, assistant } });
 }
 
 // The voice is the user's preference (cookie). Telnyx takes the voice from the
@@ -592,6 +636,16 @@ async function startAssistantCall(client, query, user, req) {
     }
   };
   if (!ASSISTANT_ID) return fail("TELNYX_ASSISTANT_ID is not configured on the server");
+  if (isGuest(user)) {
+    guestCalls++;
+    const limit = setTimeout(() => {
+      if (client.readyState !== WebSocket.OPEN) return;
+      rec.note("guest.time_limit", { ms: GUEST_CALL_MS });
+      client.send(JSON.stringify({ type: "error", error: { code: "guest_time_limit", message: "Guest calls last up to 5 minutes" } }));
+      client.close(1000);
+    }, GUEST_CALL_MS);
+    client.once("close", () => { guestCalls--; clearTimeout(limit); });
+  }
 
   // Record every browser frame; buffer the first ones (session.update) while we prepare.
   client.on("message", (data, isBinary) => rec.clientFrame(data, isBinary));
@@ -628,9 +682,11 @@ async function startAssistantCall(client, query, user, req) {
   if (client.readyState !== WebSocket.OPEN) return unlock(); // browser gave up meanwhile
   t = rec.now();
   let avatarConfigured = false;
+  let switched = false;
   try {
     const result = await setAssistantVoice(voice);
     avatarConfigured = result.avatar;
+    switched = !result.skipped;
     rec.step("assistant_voice", t, { detail: result.skipped ? { skipped: "voice already set on the assistant" } : { voice } });
     if (!result.skipped) {
       rec.http({ label: "Set assistant voice", method: "POST", url: `/v2/ai/assistants/${ASSISTANT_ID}`, status: result.status, ok: true, ms: rec.now() - t, detail: { voice_settings: { voice } } });
@@ -642,6 +698,14 @@ async function startAssistantCall(client, query, user, req) {
     return fail(err.message);
   }
   if (client.readyState !== WebSocket.OPEN) return unlock();
+  if (switched) {
+    // A conversation opened within ~0.7 s of the voice update has been seen to
+    // run without its tools; give Telnyx time to apply the new version.
+    t = rec.now();
+    await new Promise((r) => setTimeout(r, VOICE_SETTLE_MS));
+    rec.step("voice_settle", t, { detail: { note: `waits ${VOICE_SETTLE_MS} ms after a voice change` } });
+    if (client.readyState !== WebSocket.OPEN) return unlock();
+  }
 
   const target = new URL(`${TELNYX_WS}/ai/assistants/${ASSISTANT_ID}/conversation`);
   target.searchParams.set("input_sample_rate", String(inputRate));
@@ -659,8 +723,10 @@ async function startAssistantCall(client, query, user, req) {
   const upstreamStart = rec.now();
   let upstreamOpen = upstreamStart;
   let sessionStarted = false;
+  const rewrite = isGuest(user) ? guestFrame : null;
   bridge(client, target, {
-    initial: early,
+    rewrite,
+    initial: rewrite ? early.map(([data, isBinary]) => [rewrite(data, isBinary), isBinary]) : early,
     onUpstreamOpen() {
       rec.step("upstream_ws", upstreamStart, { detail: { url: `${target.origin}${target.pathname}` } });
       upstreamOpen = rec.now();
@@ -686,12 +752,13 @@ async function startAssistantCall(client, query, user, req) {
   });
 }
 
-function bridge(client, target, { initial = [], onUpstreamOpen, onUpstreamText, onUpstreamMessage, onHandshakeError, onClose } = {}) {
+function bridge(client, target, { initial = [], rewrite, onUpstreamOpen, onUpstreamText, onUpstreamMessage, onHandshakeError, onClose } = {}) {
   // No per-message compression: frames are mostly base64 audio, so deflate only adds delay.
   const upstream = new WebSocket(target, { headers: authHeaders, perMessageDeflate: false });
   const pending = [...initial]; // client frames received before upstream is open
 
   client.on("message", (data, isBinary) => {
+    if (rewrite) data = rewrite(data, isBinary);
     if (upstream.readyState === WebSocket.OPEN) upstream.send(data, { binary: isBinary });
     else pending.push([data, isBinary]);
   });

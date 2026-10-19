@@ -9,6 +9,10 @@
 //
 // Booking, flow and history are granted page by page; the back office (users,
 // AI Assistant, e-mail, SMS) is admin-only.
+//
+// Guests (no account, from the login page) get a session of their own with
+// booking and flow only: English only, nothing sent by e-mail,
+// SMS or WhatsApp (server.js), and their calls are recorded for the admins.
 import crypto from "node:crypto";
 import path from "node:path";
 import { onEdge } from "./settings.js";
@@ -34,23 +38,27 @@ export const GRANTS = [
 ];
 const GRANT_KEYS = new Set(GRANTS.map((g) => g.key));
 // The login page and what it shows (also used by the "No access" page), and the version.
-const PUBLIC_PATHS = new Set(["/login.html", "/brand.css", "/console.css", "/ui.js", "/assets/telnyx.svg", "/assets/hero.jpg", "/api/auth/login", "/api/auth/logout", "/api/version"]);
+const PUBLIC_PATHS = new Set(["/login.html", "/brand.css", "/console.css", "/ui.js", "/assets/telnyx.svg", "/assets/hero.jpg", "/api/auth/login", "/api/auth/logout", "/api/auth/guest", "/api/version"]);
 
 const COOKIE = "telnyxhotel_session";
 const SESSION_TTL = 7 * 24 * 3600_000;
+const GUEST_TTL = 2 * 3600_000;
+const GUEST_PAGES = ["booking", "flow"];
+const GUEST_ID_RE = /^g_[0-9a-f]{12}$/;
 const EMAIL_RE = /^[^\s@<>()",;]{1,64}@[^\s@<>()",;]{1,253}$/;
 
 const USERS_TTL = 5000;
-let db, secret;
+let db, secret, guestsEnabled = true;
 let users = [];
 let loadedAt = 0;
 let loading = null;
 
 // admin: { email, password, name } for the first account, used only while
 // there are no users at all.
-export async function initAuth(database, { sessionSecret, admin }) {
+export async function initAuth(database, { sessionSecret, admin, guests = true }) {
   db = database;
   secret = sessionSecret;
+  guestsEnabled = guests;
   await refreshUsers(true);
   if (!users.length) await bootstrapAdmin(admin);
 }
@@ -118,8 +126,12 @@ function newUser({ name, email, password, pages, avatar = false }) {
 export const isAdmin = (user) => !!user?.pages.includes("admin");
 
 export const publicUser = (u) => u && ({
-  id: u.id, name: u.name, email: u.email, pages: u.pages, isAdmin: isAdmin(u), avatar: !!u.avatar, createdAt: u.createdAt,
+  id: u.id, name: u.name, email: u.email, pages: u.pages, isAdmin: isAdmin(u), avatar: !!u.avatar, guest: !!u.guest, createdAt: u.createdAt,
 });
+
+// A guest is not stored anywhere: the signed cookie carries its id.
+const guestUser = (id) => ({ id, name: "Guest", email: "guest", pages: GUEST_PAGES, avatar: true, guest: true });
+export const isGuest = (user) => !!user?.guest;
 
 export function canAccess(user, page) {
   if (!user || !PAGES[page]) return false;
@@ -210,6 +222,7 @@ export async function deleteUser(id, actor) {
 }
 
 export async function changeOwnPassword(user, current, next) {
+  if (isGuest(user)) throw badRequest("Guests have no password", 403);
   if (typeof current !== "string" || !verifyPassword(current, user.passwordHash)) throw badRequest("Current password is wrong", 403);
   validate({ password: next }, { partial: true });
   if (typeof next !== "string" || !next) throw badRequest("New password is required");
@@ -228,6 +241,11 @@ function issueToken(user) {
   return `${payload}.${sign(payload)}`;
 }
 
+function issueGuestToken(id) {
+  const payload = Buffer.from(JSON.stringify({ gid: id, exp: Date.now() + GUEST_TTL })).toString("base64url");
+  return `${payload}.${sign(payload)}`;
+}
+
 function userFromToken(token) {
   const [payload, sig] = String(token || "").split(".");
   if (!payload || !sig) return null;
@@ -237,6 +255,7 @@ function userFromToken(token) {
   let data;
   try { data = JSON.parse(Buffer.from(payload, "base64url").toString()); } catch { return null; }
   if (!data.exp || data.exp < Date.now()) return null;
+  if (data.gid) return guestsEnabled && GUEST_ID_RE.test(data.gid) ? guestUser(data.gid) : null;
   const user = findUser(data.uid);
   return user && user.sessionVersion === data.sv ? user : null;
 }
@@ -269,6 +288,29 @@ function loginAllowed(ip) {
   const hits = (loginHits.get(ip) || []).filter((t) => now - t < 15 * 60_000);
   loginHits.set(ip, hits);
   return hits.length < 10;
+}
+
+// Guest sessions: 10 per hour per IP.
+const guestHits = new Map();
+function guestAllowed(ip) {
+  const now = Date.now();
+  const hits = (guestHits.get(ip) || []).filter((t) => now - t < 3600_000);
+  if (hits.length >= 10) return false;
+  guestHits.set(ip, [...hits, now]);
+  return true;
+}
+
+// GET: whether the login page offers guest access. POST: start a guest session.
+export function guestStatus(_req, res) {
+  res.json({ enabled: guestsEnabled });
+}
+
+export function guestLogin(req, res) {
+  if (!guestsEnabled) return res.status(404).json({ error: "Guest access is turned off" });
+  if (!guestAllowed(req.ip)) return res.status(429).json({ error: "Too many guest sessions, try again later" });
+  const user = guestUser(`g_${crypto.randomBytes(6).toString("hex")}`);
+  setCookie(req, res, COOKIE, issueGuestToken(user.id), GUEST_TTL);
+  res.json({ user: publicUser(user), pages: allowedPages(user) });
 }
 
 export async function login(req, res) {

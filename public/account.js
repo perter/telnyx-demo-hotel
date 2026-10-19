@@ -13,6 +13,9 @@
     return res.json();
   });
 
+  // A guest's way out is the login page, to sign in with an account.
+  const exitLabel = (user) => (user.guest ? "Sign in" : "Log out");
+
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
     location.href = "/login.html";
@@ -41,8 +44,8 @@
         <a class="brand" href="/"><span class="telnyx-logo" role="img" aria-label="Telnyx"></span><span class="tagline">TelnyxHotel</span></a>
         <nav aria-label="Pages">${pages.filter((p) => !p.admin).map(link).join("")}
           ${admin.length ? `<span class="nav-group" aria-label="Admin">${admin.map(link).join("")}</span>` : ""}</nav>
-        <span class="who" title="${esc(user.email)}"><span class="av">${esc(initials(user.name))}</span>${esc(user.name)}</span>
-        <button type="button" class="btn ghost small" data-logout>Log out</button>`;
+        <span class="who" title="${esc(user.guest ? "Guest demo" : user.email)}"><span class="av">${esc(initials(user.name))}</span>${esc(user.name)}</span>
+        <button type="button" class="btn ghost small" data-logout>${exitLabel(user)}</button>`;
       el.querySelector("[data-logout]").onclick = logout;
     });
   }
@@ -53,9 +56,9 @@
     box.innerHTML = `
       <button type="button" aria-haspopup="true" aria-expanded="false"><span class="av">${esc(initials(user.name))}</span>${esc(user.name.split(" ")[0])}</button>
       <div class="menu" hidden role="menu">
-        <div class="head">${esc(user.name)}<small>${esc(user.email)}</small></div>
+        <div class="head">${esc(user.name)}<small>${esc(user.guest ? "Guest demo" : user.email)}</small></div>
         ${pages.map(link).join("").replaceAll("<a ", '<a role="menuitem" ')}
-        <button type="button" role="menuitem" data-logout>Log out</button>
+        <button type="button" role="menuitem" data-logout>${exitLabel(user)}</button>
       </div>`;
     const toggle = box.querySelector("button");
     const menu = box.querySelector(".menu");

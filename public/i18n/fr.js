@@ -90,6 +90,8 @@ I18N.extend({
     "recap.sending": "📧 Envoi du récapitulatif…", "recap.sent": "📧 Récapitulatif envoyé à {to}",
     "recap.preview": "📧 Récapitulatif prêt (aperçu, Telnyx Email non configuré)",
     "recap.none": "🔕 Pas d'e-mail récapitulatif : le client n'a pas laissé d'adresse.",
+    "guest.note": "Démo invité : en anglais uniquement, et aucun e-mail, SMS ou WhatsApp n'est envoyé. Avec un compte, vous avez les six langues et les confirmations de réservation.",
+    "guest.notSent": "📧 Démo invité : aucun e-mail récapitulatif, SMS ou WhatsApp n'a été envoyé. Avec un compte, les confirmations partent automatiquement.",
     "recap.error": "⚠️ Récapitulatif non envoyé : {error}", "recap.open": "Ouvrir l'e-mail ↗",
     "sms.sending": "💬 Envoi du SMS de confirmation…", "sms.sent": "💬 SMS de confirmation envoyé au {to}", "sms.sentWhatsApp": "💬 Confirmation envoyée sur WhatsApp au {to}",
     "sms.notMobile": "💬 Pas de SMS : le {number} n'est pas un numéro de mobile.", "sms.error": "⚠️ SMS non envoyé : {error}",

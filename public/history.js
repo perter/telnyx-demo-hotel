@@ -162,6 +162,7 @@ const STEP_INFO = {
   voices: { label: "Check voice", color: "server", help: "Server verifies the chosen voice (Telnyx voice list, cached 10 min)." },
   voice_lock: { label: "Wait for voice lock", color: "server", help: "Waits if another call is switching the assistant's voice at the same moment." },
   assistant_voice: { label: "Set assistant voice", color: "down", help: "POST /v2/ai/assistants/{id} — the realtime API takes the voice from the assistant." },
+  voice_settle: { label: "Let the voice change settle", color: "server", help: "After a voice change, waits for Telnyx to apply the new assistant version: a conversation opened too soon can start without its tools." },
   upstream_ws: { label: "Open Telnyx WebSocket", color: "down", help: "Server opens the conversation socket to Telnyx with the API key." },
   session_created: { label: "Session created", color: "down", help: "Telnyx starts the conversation (session.created)." },
 };
