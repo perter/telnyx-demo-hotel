@@ -113,6 +113,7 @@ I18N.extend({
     "help.nav.flow": "Guarda cosa succede durante una chiamata, passo dopo passo.",
     "help.nav.history": "Le tue chiamate e i messaggi agli ospiti, tracciati dall'inizio alla fine.",
     "help.nav.admin": "Crea utenti e scegli cosa possono aprire.",
+    "help.nav.guests": "Chiamate degli ospiti: quando, da dove, quante hanno prenotato e perché.",
     "help.nav.assistant": "Lingue, voci, prompt, base di conoscenza, avatar.",
     "help.nav.email": "E-mail di riepilogo con Telnyx Email.",
     "help.nav.sms": "Conferme di prenotazione via SMS o WhatsApp.",

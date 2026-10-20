@@ -74,7 +74,7 @@ function percentile(values, p) {
   return s[Math.min(s.length - 1, Math.floor((p / 100) * s.length))];
 }
 
-export function createCallRecorder({ user, voice, inputRate, ip, userAgent }) {
+export function createCallRecorder({ user, voice, inputRate, ip, userAgent, where = {} }) {
   const id = `c_${Date.now().toString(16)}${crypto.randomBytes(4).toString("hex")}`;
   const t0 = Date.now();
   const now = () => Date.now() - t0;
@@ -381,7 +381,7 @@ export function createCallRecorder({ user, voice, inputRate, ip, userAgent }) {
   rec.snapshot = () => ({
     id,
     summary: rec.summary(),
-    client: { ip, userAgent },
+    client: { ip, userAgent, ...where },
     voice: voiceInfo,
     dynamicVariables,
     stats: stats(),

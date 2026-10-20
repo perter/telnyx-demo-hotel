@@ -22,3 +22,10 @@ All photographs were sourced from Wikimedia Commons and have been modified for t
 In `chicago_riverwalk.jpg` the small company signs on two background buildings were blurred.
 
 `telnyx.svg` is the Telnyx wordmark, a trademark of Telnyx LLC, used in the header of this Telnyx demo.
+
+## Data
+
+| File | What | Source | Licence |
+| --- | --- | --- | --- |
+| `world-map.json` | Country outlines for the Guest stats map (1:110m, Antarctica left out), pre-projected | [Natural Earth](https://www.naturalearthdata.com) via [world-atlas](https://github.com/topojson/world-atlas) | Public domain |
+| `geo/ip-country.bin.gz` (built by `npm run geo:update`, not in the repo) | Country data for the Guest stats map | [IP to Country Lite by DB-IP](https://db-ip.com) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

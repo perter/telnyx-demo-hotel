@@ -1,7 +1,7 @@
 # TelnyxHotel: a multilingual AI voice receptionist built on Telnyx
 
 [![Release](https://img.shields.io/github/v/release/team-telnyx/telnyx-demo-hotel?color=00E3AA&label=release)](https://github.com/team-telnyx/telnyx-demo-hotel/releases)
-[![Version](https://img.shields.io/badge/version-1.1.0-00E3AA)](package.json)
+[![Version](https://img.shields.io/badge/version-1.2.0-00E3AA)](package.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A522.5-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)](https://expressjs.com)
@@ -25,8 +25,9 @@ Guests book a room by **talking to the front desk**. A Telnyx AI Assistant answe
 - **Booking** (`/`): hotel site with a voice concierge; the guest picks a language and a Telnyx Ultra voice, talks or types, and the page follows the spoken language.
 - **How it works** (`/flow.html`): animated architecture, step by step; live while a call runs in another tab.
 - **Call history** (`/history.html`): setup waterfall, conversation with per-turn latency, tool calls, events, and the guest messages each call sent.
-- **Back office** (admins): Users & access, AI Assistant (languages, voices, prompt, knowledge base, video avatar), E-mail, SMS / WhatsApp.
+- **Back office** (admins): Users & access, Guest stats, AI Assistant (languages, voices, prompt, knowledge base, video avatar), E-mail, SMS / WhatsApp.
 - **Guest access**: *Try it as a guest* on the login page, no account needed (English only, nothing sent to the guest).
+- **Guest stats** (`/guests.html`, admins): understand how guests use the demo (calls by hour and weekday, a world map by country, booking rate and where unbooked calls stopped, Telnyx conversation insights per call) and monitor the app's traffic on Telnyx Edge (requests, errors, latency).
 - A collapsible **help column** on every page, and a footer with **Frontend · Backend · Branch** versions.
 
 ## Quick start
@@ -39,6 +40,7 @@ cd telnyx-demo-hotel
 npm install
 cp .env.example .env    # set TELNYX_API_KEY (or let setup ask for it)
 npm run setup           # creates the knowledge base and the AI Assistant, completes .env
+npm run geo:update      # optional: country data for the Guest stats map
 npm start               # http://localhost:3000
 ```
 
@@ -106,6 +108,7 @@ flowchart LR
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` | First admin, created while there are no users. |
 | `SESSION_SECRET` | Signs session cookies. |
 | `GUEST_ACCESS` | `off` removes guest access (on by default). |
+| `EDGE_FUNCTION` | Edge function whose traffic Guest stats shows (default `telnyxhotel-concierge`). |
 | `PORT`, `DATA_DIR` | HTTP port (3000), SQLite location (`./data`). |
 | `SQLDB_ID` | Telnyx Edge SQL database (instead of SQLite). |
 | `SMTP_*`, `MAIL_FROM`, `RECAP_OVERRIDE_TO` | Optional SMTP fallback for the recap. |
@@ -116,7 +119,7 @@ Languages, voices, e-mail and SMS / WhatsApp setup are edited in the app and sto
 ## Access and privacy
 
 - Deny-by-default: everything needs a login except the login page and its assets, `/health`, `/api/version` and the guest sign-in (`/api/auth/guest`).
-- **Guests** get a 2-hour session with Booking and How it works only: English only (also enforced on the call), the video avatar when one is set up, and no recap e-mail, SMS or WhatsApp; the page and the receptionist say these come with an account. Guest calls last up to 5 minutes, 3 at a time per instance, 10 guest sessions per hour per IP. Admins see guest calls in Call history (user *Guest*).
+- **Guests** get a 2-hour session with Booking and How it works only: English only (also enforced on the call), the video avatar when one is set up, and no recap e-mail, SMS or WhatsApp; the page and the receptionist say these come with an account. Guest calls last up to 5 minutes, 3 at a time per instance, 10 guest sessions per hour per IP. Admins see guest calls in Call history (user *Guest*). Guest stats shows calls by country only, worked out on the server from DB-IP country data (`npm run geo:update`, CC BY 4.0); nothing is shared with third parties.
 - Admins grant **Booking**, **How it works** and **Call history**; the back office is admin-only.
 - Each user sees only their own calls, messages and recap previews; admins see everyone's.
 - scrypt passwords, signed HttpOnly session cookies, rate-limited logins and confirmations, Origin-checked WebSockets, strict security headers.
@@ -157,6 +160,8 @@ CMD ["node", "server.js"]
 3. Add secrets: `npm run edge -- secrets add TELNYXHOTEL_<NAME> <value>` for `TELNYX_API_KEY`, `TELNYX_ASSISTANT_ID`, `SQLDB_ID`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SESSION_SECRET`.
 4. `npm run edge:ship`, then `npm run probe:live -- https://<your-function-url>`.
 
+`edge:ship` downloads the country data for Guest stats the first time (`npm run geo:update` refreshes it; DB-IP updates it monthly). If your function isn't named `telnyxhotel-concierge`, set `TELNYXHOTEL_EDGE_FUNCTION` so the Traffic tab finds it.
+
 ## Tests
 
 ```bash
@@ -164,13 +169,15 @@ npm test                                        # end-to-end access and isolatio
 npm run probe:live -- https://your-deployment   # a deployed site refuses anonymous access
 ```
 
-`npm test` boots the real server on a throwaway database and checks access rules, isolation, cookies, validation and rate limits. With a key and assistant in `.env`, a few extra read-only tests run against Telnyx.
+`npm test` boots the real server on a throwaway database and checks access rules, isolation, cookies, validation and rate limits. With a key and assistant in `.env`, a few extra read-only tests run against Telnyx. The country lookup test runs once `npm run geo:update` has built the table.
 
 ## Project layout
 
 ```
 server.js  auth.js   routes, Telnyx proxies, voice lock; users, sessions, access gate
 calls.js             call recorder        concierge.js   languages and voices
+guest-stats.js geo.js  guest stats, Telnyx insights; country lookup
+edge-metrics.js      Edge function traffic (Edge Compute metrics API)
 email.js  sms.js     Telnyx Email, Messaging, Number Lookup
 recap.js             confirmation texts in six languages
 db.js  settings.js   SQLite / Edge SQL DB, settings

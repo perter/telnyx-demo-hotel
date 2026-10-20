@@ -97,11 +97,11 @@ function wsStatus(pathname, { cookie, origin } = {}) {
   });
 }
 
-const PAGES = ["/", "/index.html", "/flow.html", "/history.html", "/admin.html", "/assistant.html", "/email.html", "/sms.html"];
-const ADMIN_PAGES = ["/admin.html", "/assistant.html", "/email.html", "/sms.html"];
+const PAGES = ["/", "/index.html", "/flow.html", "/history.html", "/admin.html", "/guests.html", "/assistant.html", "/email.html", "/sms.html"];
+const ADMIN_PAGES = ["/admin.html", "/guests.html", "/assistant.html", "/email.html", "/sms.html"];
 const ADMIN_APIS = [
   ["GET", "/api/admin/users"], ["POST", "/api/admin/users"], ["PATCH", "/api/admin/users/u_x"], ["DELETE", "/api/admin/users/u_x"],
-  ["GET", "/api/admin/concierge"], ["PUT", "/api/admin/concierge"],
+  ["GET", "/api/admin/guests"], ["GET", "/api/admin/traffic"], ["GET", "/api/admin/concierge"], ["PUT", "/api/admin/concierge"],
   ["GET", "/api/admin/assistant"], ["PATCH", "/api/admin/assistant/prompt"], ["PATCH", "/api/admin/assistant/knowledge"], ["PATCH", "/api/admin/assistant/avatar"],
   ["GET", "/api/admin/email"], ["PUT", "/api/admin/email"], ["POST", "/api/admin/email/test"],
   ["GET", "/api/admin/sms"], ["PUT", "/api/admin/sms"], ["POST", "/api/admin/sms/test"],
@@ -666,6 +666,30 @@ describe("guest (no account)", () => {
     assert.equal(calls.length, 1);
     assert.deepEqual([calls[0].user.id, calls[0].user.name], [guestId, "Guest"]);
     await api(admin, "DELETE", `/api/calls/${calls[0].id}`);
+  });
+
+  test("guest stats: only for admins, with each call's stage and where it came from", async () => {
+    // Refused before the call starts (bad voice, or no voice list): recorded as a guest call all the same.
+    await new Promise((resolve) => {
+      const ws = new WebSocket(`ws://localhost:${PORT}/ws/assistant`, {
+        headers: { Cookie: `${guest}; telnyxhotel_prefs=${guestId}|en|Nope.voice`, "CF-IPCountry": "it" },
+      });
+      ws.on("close", resolve);
+      ws.on("error", resolve);
+    });
+    let call;
+    for (let i = 0; i < 20 && !call; i++) {
+      const res = await api(admin, "GET", "/api/admin/guests?days=1");
+      assert.equal(res.status, 200);
+      call = (await res.json()).calls.find((c) => c.guestId === guestId);
+      if (!call) await new Promise((r) => setTimeout(r, 150));
+    }
+    assert.ok(call, "the guest call is counted");
+    assert.deepEqual([call.stage, call.booked, call.endedBy], ["failed", false, "error"]);
+    assert.equal(call.ip, null, "a loopback address isn't a location");
+    assert.equal(call.country, "IT", "without a public IP, the platform's country header");
+    assert.equal((await api(guest, "GET", "/api/admin/guests")).status, 403);
+    await api(admin, "DELETE", `/api/calls/${call.id}`);
   });
 });
 

@@ -8,7 +8,7 @@
 // `avatar` turns the video avatar (beta, billed per minute) on for that user.
 //
 // Booking, flow and history are granted page by page; the back office (users,
-// AI Assistant, e-mail, SMS) is admin-only.
+// guest stats, AI Assistant, e-mail, SMS) is admin-only.
 //
 // Guests (no account, from the login page) get a session of their own with
 // booking and flow only: English only, nothing sent by e-mail,
@@ -22,6 +22,7 @@ const PAGES = {
   flow: { label: "How it works", href: "/flow.html" },
   history: { label: "Call history", href: "/history.html" },
   admin: { label: "Users & access", href: "/admin.html", admin: true },
+  guests: { label: "Guest stats", href: "/guests.html", admin: true },
   assistant: { label: "AI Assistant", href: "/assistant.html", admin: true },
   email: { label: "E-mail", href: "/email.html", admin: true },
   sms: { label: "SMS / WhatsApp", href: "/sms.html", admin: true },
@@ -34,7 +35,7 @@ PAGE_PATHS["/index.html"] = "booking";
 // What an admin can tick for a user: the guest-facing pages, or admin.
 export const GRANTS = [
   ...Object.entries(PAGES).filter(([, p]) => !p.admin).map(([key, p]) => ({ key, label: p.label, href: p.href })),
-  { key: "admin", label: "Admin (users, AI Assistant, e-mail, SMS)", href: PAGES.admin.href },
+  { key: "admin", label: "Admin (users, guest stats, AI Assistant, e-mail, SMS)", href: PAGES.admin.href },
 ];
 const GRANT_KEYS = new Set(GRANTS.map((g) => g.key));
 // The login page and what it shows (also used by the "No access" page), and the version.

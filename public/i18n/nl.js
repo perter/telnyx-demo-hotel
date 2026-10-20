@@ -113,6 +113,7 @@ I18N.extend({
     "help.nav.flow": "Zie stap voor stap wat er tijdens een gesprek gebeurt.",
     "help.nav.history": "Je gesprekken en gastberichten, van begin tot eind gevolgd.",
     "help.nav.admin": "Maak gebruikers aan en kies wat ze mogen openen.",
+    "help.nav.guests": "Gastgesprekken: wanneer, waarvandaan, hoeveel er boekten en waarom.",
     "help.nav.assistant": "Talen, stemmen, prompt, kennisbank, avatar.",
     "help.nav.email": "Boekingsoverzichten per e-mail met Telnyx Email.",
     "help.nav.sms": "Boekingsbevestigingen per sms of WhatsApp.",
