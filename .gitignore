@@ -1,6 +1,8 @@
 node_modules/
 .env
 data/
+# IP → country table, built by npm run geo:update (DB-IP, CC BY 4.0)
+geo/
 .edge-home/
 .DS_Store
 # Telnyx Edge build output; the manifest example is the only tracked file

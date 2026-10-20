@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guest stats — TelnyxHotel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="console.css">
+</head>
+<body class="console">
+  <header id="topbar"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Guest stats</h1>
+        <p class="muted" id="sub">Calls made with <strong>Try it as a guest</strong> (no account): when, from where, how far into the booking, and what the Telnyx conversation insights say about them.</p>
+      </div>
+      <div class="filters">
+        <select id="days" aria-label="Period">
+          <option value="1">Last 24 hours</option>
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="0">Everything kept</option>
+        </select>
+        <button class="btn ghost" id="refreshBtn" type="button">Refresh</button>
+      </div>
+    </div>
+    <p class="form-error" id="error" role="alert"></p>
+
+    <section class="stats" id="kpis"></section>
+
+    <nav class="page-tabs" role="tablist" aria-label="Guest stats">
+      <button type="button" role="tab" id="tab-overview" aria-controls="panel-overview" data-tab="overview">Why booked, why not</button>
+      <button type="button" role="tab" id="tab-when" aria-controls="panel-when" data-tab="when">When</button>
+      <button type="button" role="tab" id="tab-where" aria-controls="panel-where" data-tab="where">Where</button>
+      <button type="button" role="tab" id="tab-insights" aria-controls="panel-insights" data-tab="insights">Insights</button>
+      <button type="button" role="tab" id="tab-calls" aria-controls="panel-calls" data-tab="calls">Calls</button>
+      <button type="button" role="tab" id="tab-traffic" aria-controls="panel-traffic" data-tab="traffic">Traffic</button>
+    </nav>
+
+    <section class="card" role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
+      <ul class="findings" id="findings"></ul>
+      <div class="grid-2" style="margin-top:18px">
+        <div>
+          <h3 class="sub-h">How far calls got</h3>
+          <div class="bars" id="funnel"></div>
+        </div>
+        <div>
+          <h3 class="sub-h">Booked vs not booked</h3>
+          <div class="table-wrap"><table class="data compact" id="compare"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" role="tabpanel" id="panel-when" aria-labelledby="tab-when" hidden>
+      <div class="card-head"><h2>When guests call</h2><span class="muted hint" id="tzNote"></span></div>
+      <div class="table-wrap"><div class="heatmap" id="heatmap"></div></div>
+    </section>
+
+    <section class="card" role="tabpanel" id="panel-where" aria-labelledby="tab-where" hidden>
+      <div class="card-head"><h2>Where calls come from</h2><span class="muted hint">By country</span></div>
+      <div class="where-grid">
+        <div class="map-wrap"><svg id="map" role="img" aria-label="World map of guest calls by country"></svg><div class="map-legend" id="mapLegend"></div></div>
+        <div>
+          <h3 class="sub-h">Share of calls by country</h3>
+          <div class="bars" id="where"></div>
+        </div>
+      </div>
+      <p class="muted hint" id="whereNote" style="margin:14px 0 0"></p>
+      <p class="muted hint" style="margin:4px 0 0">Country data by <a href="https://db-ip.com" target="_blank" rel="noopener">DB-IP</a> (CC BY 4.0); map outlines from Natural Earth.</p>
+    </section>
+
+    <div class="grid-2" role="tabpanel" id="panel-insights" aria-labelledby="tab-insights" hidden>
+      <section class="card">
+        <h2>Sentiment</h2>
+        <div class="bars" id="sentiment"></div>
+      </section>
+      <section class="card">
+        <h2>Missed opportunities</h2>
+        <p class="muted hint" style="margin:-6px 0 10px">Calls where the guest asked for something the receptionist couldn't help with.</p>
+        <div id="missed"></div>
+      </section>
+    </div>
+
+    <section class="card flush" role="tabpanel" id="panel-calls" aria-labelledby="tab-calls" hidden>
+      <div class="card-head" style="padding:16px 18px 0"><h2>Guest calls</h2><span class="muted hint">Click a call to open it in Call history.</span></div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Started</th><th class="num">Duration</th><th>Got to</th><th>Ended by</th><th>Country</th><th>Sentiment</th><th>Summary</th></tr></thead>
+          <tbody id="calls"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div role="tabpanel" id="panel-traffic" aria-labelledby="tab-traffic" class="tab-stack" hidden>
+      <section class="card">
+        <div class="card-head"><h2>Requests to the app</h2><span class="muted hint" id="trafficNote"></span></div>
+        <p class="muted hint" style="margin:-6px 0 12px">Every HTTP request served by the Telnyx Edge function: pages, scripts, images, API calls and call WebSockets, from guests, signed-in users, bots and uptime checks alike. Not calls: one call is a few hundred requests.</p>
+        <section class="stats" id="trafficKpis"></section>
+        <div class="chart" id="trafficChart"></div>
+        <div class="chart-legend"><span class="sw ok"></span>Success (2xx) <span class="sw other"></span>Redirects &amp; upgrades <span class="sw warn"></span>Client errors (4xx) <span class="sw err"></span>Server errors (5xx)</div>
+      </section>
+      <section class="card">
+        <h2>Edge regions</h2>
+        <p style="margin:0">The Telnyx Portal shows which Edge regions served the function (Edge Compute → this function → regions), as a share of its requests. Telnyx doesn't offer that split through its API yet, so it isn't shown here. Read it like the chart above: requests, not guests. Each request is served by the region nearest the caller, and a single long session or an automated checker can tip the split. For where guests are, see the <a href="#where">Where</a> tab.</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="account.js"></script>
+  <script src="ui.js"></script>
+  <script src="guests.js"></script>
+</body>
+</html>

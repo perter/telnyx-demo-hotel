@@ -249,3 +249,48 @@ input[readonly] { background: var(--surface-2); color: var(--muted); }
 .voice-table input { accent-color: var(--brand); }
 .kb-files { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; }
 code { font-family: var(--mono); font-size: 12px; background: var(--surface-2); padding: 1px 4px; border-radius: 4px; }
+
+/* ---------- Guest stats ---------- */
+.hint { font-size: 13px; }
+.sub-h { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+.heatmap { display: grid; grid-template-columns: 40px repeat(24, minmax(24px, 1fr)) 36px; gap: 3px; min-width: 760px; font-size: 11px; font-variant-numeric: tabular-nums; }
+.hm-h, .hm-d, .hm-t { color: var(--muted); display: flex; align-items: center; justify-content: center; }
+.hm-d { justify-content: flex-start; }
+.hm-cell { height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 500;
+  background: color-mix(in srgb, var(--tx-green-ink) calc(var(--v) * 100%), var(--surface-2)); }
+.hm-cell.hot { color: #fff; }
+.bars { display: grid; gap: 6px; }
+.bar-row { display: grid; grid-template-columns: minmax(110px, 190px) 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+.bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.bar-fill { display: block; height: 100%; background: var(--tx-green-ink); border-radius: 999px; }
+.bar-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.findings { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+table.data.compact td, table.data.compact th { padding: 6px 10px; }
+.insight-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.insight-list p { margin: 4px 0 0; font-size: 13px; white-space: pre-wrap; }
+.summary-cell { min-width: 280px; max-width: 520px; font-size: 13px; }
+.summary-cell summary { cursor: pointer; }
+.summary-cell h4 { margin: 10px 0 2px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.summary-cell p { margin: 0; white-space: pre-wrap; }
+@media (max-width: 600px) { .bar-row { grid-template-columns: 1fr auto; } .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+.tab-stack { display: grid; gap: 20px; }
+.chart svg { width: 100%; height: auto; display: block; margin-top: 14px; }
+.chart .axis { fill: var(--muted); font-size: 11px; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .ok { fill: var(--tx-green-ink); } .chart .other { fill: #b9b8ad; } .chart .warn { fill: var(--warn); } .chart .err { fill: var(--err); }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.chart-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: -8px; }
+.chart-legend .sw.ok { background: var(--tx-green-ink); } .chart-legend .sw.other { background: #b9b8ad; } .chart-legend .sw.warn { background: var(--warn); } .chart-legend .sw.err { background: var(--err); }
+.page-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.page-tabs button { font: inherit; font-weight: 500; font-size: 14px; color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; cursor: pointer; white-space: nowrap; margin-bottom: -1px; }
+.page-tabs button:hover { color: var(--ink); }
+.page-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--tx-green-ink); }
+.where-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 24px; align-items: start; }
+.map-wrap svg { width: 100%; height: auto; display: block; }
+.map-wrap path { fill: var(--surface-2); stroke: var(--line); stroke-width: .5; }
+.map-wrap path.on { fill: color-mix(in srgb, var(--tx-green-ink) calc(var(--v) * 100%), var(--surface-2)); stroke: var(--surface); }
+.map-wrap path:hover { stroke: var(--ink); stroke-width: 1; }
+.map-legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.map-scale { width: 120px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--tx-green-ink) 25%, var(--surface-2)), var(--tx-green-ink)); }
+@media (max-width: 860px) { .where-grid { grid-template-columns: 1fr; } }

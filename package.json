@@ -1,6 +1,6 @@
 {
   "name": "telnyxhotel-voice-demo",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "TelnyxHotel: a multilingual AI voice receptionist demo built on Telnyx AI Assistants, Voice, Messaging, Email and Edge Compute.",
   "license": "MIT",
   "private": true,
@@ -19,6 +19,7 @@
     "test": "node --test test/*.test.js",
     "assistant:sync": "node scripts/sync-assistant.js",
     "kb:sync": "node scripts/kb-sync.js",
+    "geo:update": "node scripts/geo-update.js",
     "edge:build": "node scripts/edge-build.js",
     "edge:ship": "node scripts/edge-build.js && bash scripts/edge.sh ship --from-dir=edge --timeout 25m",
     "probe:live": "bash scripts/security-probe.sh",

@@ -20,6 +20,8 @@ import {
   isGuest, listUsers, login, logout, pageGate, publicUser, readCookie, refreshUsers, requirePage, setCookie, updateUser, userFromRequest,
 } from "./auth.js";
 import { openDb } from "./db.js";
+import { guestStats, initGuestStats } from "./guest-stats.js";
+import { edgeTraffic, initEdgeMetrics } from "./edge-metrics.js";
 import { onEdge, setting } from "./settings.js";
 import { activeCallFor, createCallRecorder, deleteCall, getCall, initCalls, listCalls } from "./calls.js";
 import { LANGUAGES, getConcierge, initConcierge, publicConcierge, saveConcierge } from "./concierge.js";
@@ -54,6 +56,7 @@ function startStorage() {
       guests: setting("GUEST_ACCESS") !== "off",
     });
     initCalls(db);
+    initGuestStats(db, { apiKey: API_KEY });
     initConcierge(db);
     initEmail(db, { apiKey: API_KEY });
     initSms(db, { apiKey: API_KEY });
@@ -69,6 +72,7 @@ const TELNYX = "https://api.telnyx.com/v2";
 const TELNYX_WS = "wss://api.telnyx.com/v2";
 const authHeaders = { Authorization: `Bearer ${API_KEY}` };
 initAssistantAdmin({ apiKey: API_KEY, id: ASSISTANT_ID });
+initEdgeMetrics({ apiKey: API_KEY, functionName: setting("EDGE_FUNCTION") });
 
 const app = express();
 app.disable("x-powered-by");
@@ -184,6 +188,15 @@ app.get("/api/messages", requirePage("history"), async (req, res) => {
     sms: sms.value, email: (email.value ?? []).map((m) => ({ ...m, user: emailOf.get(m.userId) ?? null })),
     emailError: email.reason?.message || null, isAdmin: !user,
   });
+});
+// Guest stats (admins): every guest call with its Telnyx insights, for ?days=N (0: all).
+app.get("/api/admin/guests", requirePage("guests"), async (req, res) => {
+  const days = [1, 7, 30, 90, 0].includes(Number(req.query.days)) ? Number(req.query.days) : 30;
+  try { res.json({ days, ...(await guestStats({ days })) }); } catch (err) { sendError(res, err); }
+});
+// Traffic of the Edge function (all requests, not calls), last 24 h or 7 days.
+app.get("/api/admin/traffic", requirePage("guests"), async (req, res) => {
+  try { res.json(await edgeTraffic({ days: Number(req.query.days) || 30 })); } catch (err) { sendError(res, err); }
 });
 app.delete("/api/calls/:id", requirePage("history"), async (req, res) => {
   try {
@@ -616,6 +629,21 @@ function guestFrame(data, isBinary) {
   return JSON.stringify({ ...ev, session: { ...ev.session, assistant } });
 }
 
+// The caller's address: on Edge the proxy appends it to X-Forwarded-For (one
+// hop, as for "trust proxy"); the socket itself is the proxy.
+function clientIp(req) {
+  const forwarded = String(req.headers["x-forwarded-for"] || "").split(",").map((s) => s.trim()).filter(Boolean);
+  return (onEdge() && (forwarded.at(-1) || String(req.headers["x-real-ip"] || "").trim())) || req.socket.remoteAddress;
+}
+
+// A country header, if the platform adds one: the fallback when the origin IP
+// isn't in the IP → country table (geo.js).
+const COUNTRY_HEADERS = ["cf-ipcountry", "x-country-code", "x-geo-country", "cloudfront-viewer-country", "x-vercel-ip-country"];
+function clientWhere(req) {
+  const country = COUNTRY_HEADERS.map((h) => String(req.headers[h] || "").toUpperCase()).find((c) => /^[A-Z]{2}$/.test(c) && c !== "XX");
+  return { country: country || null };
+}
+
 // The voice is the user's preference (cookie). Telnyx takes the voice from the
 // assistant itself, so it is set there before the call (under the voice lock).
 async function startAssistantCall(client, query, user, req) {
@@ -623,7 +651,7 @@ async function startAssistantCall(client, query, user, req) {
   const inputRate = Number(query.get("input_sample_rate")) || 16000;
   const rec = createCallRecorder({
     user, voice, inputRate,
-    ip: req.socket.remoteAddress, userAgent: String(req.headers["user-agent"] || "").slice(0, 300),
+    ip: clientIp(req), userAgent: String(req.headers["user-agent"] || "").slice(0, 300), where: clientWhere(req),
   });
   rec.note("client.connected", { path: "/ws/assistant", voice, input_sample_rate: inputRate });
 

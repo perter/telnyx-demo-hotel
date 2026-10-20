@@ -113,6 +113,7 @@ I18N.extend({
     "help.nav.flow": "Sehen Sie Schritt für Schritt, was während eines Anrufs passiert.",
     "help.nav.history": "Ihre Anrufe und Gästenachrichten, vollständig nachvollziehbar.",
     "help.nav.admin": "Benutzer anlegen und festlegen, was sie öffnen dürfen.",
+    "help.nav.guests": "Gastanrufe: wann, woher, wie viele gebucht haben und warum.",
     "help.nav.assistant": "Sprachen, Stimmen, Prompt, Wissensdatenbank, Avatar.",
     "help.nav.email": "Buchungsbestätigungen per E-Mail mit Telnyx Email.",
     "help.nav.sms": "Buchungsbestätigungen per SMS oder WhatsApp.",
