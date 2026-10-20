@@ -102,15 +102,16 @@ export async function recentMessages({ limit = 15, userId } = {}) {
 }
 
 // Sends one message with the saved settings. `to` is the guest's address; with
-// a redirect address set, it goes there instead. Returns what happened.
-export async function sendEmail({ to, subject, html, text, tag, userId, idempotencyKey }) {
+// a redirect address set, it goes there instead. fromName replaces the saved
+// sender name for this message. Returns what happened.
+export async function sendEmail({ to, subject, html, text, tag, userId, idempotencyKey, fromName }) {
   const s = await getEmailSettings();
   if (!s.enabled || !s.from) throw bad("Telnyx Email is not set up", 409);
   const recipient = s.overrideTo || to;
   const { data } = await telnyx("POST", "/email_messages", {
     headers: { "Idempotency-Key": idempotencyKey || crypto.randomUUID() },
     body: {
-      from: s.fromName ? { email: s.from, name: s.fromName } : s.from,
+      from: fromName || s.fromName ? { email: s.from, name: fromName || s.fromName } : s.from,
       to: [recipient],
       ...(s.replyTo ? { reply_to: s.replyTo } : {}),
       subject,

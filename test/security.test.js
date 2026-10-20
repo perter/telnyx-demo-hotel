@@ -101,7 +101,8 @@ const PAGES = ["/", "/index.html", "/flow.html", "/history.html", "/admin.html",
 const ADMIN_PAGES = ["/admin.html", "/guests.html", "/assistant.html", "/email.html", "/sms.html"];
 const ADMIN_APIS = [
   ["GET", "/api/admin/users"], ["POST", "/api/admin/users"], ["PATCH", "/api/admin/users/u_x"], ["DELETE", "/api/admin/users/u_x"],
-  ["GET", "/api/admin/guests"], ["GET", "/api/admin/traffic"], ["GET", "/api/admin/contacts"], ["DELETE", "/api/admin/contacts/ct_x"], ["GET", "/api/admin/concierge"], ["PUT", "/api/admin/concierge"],
+  ["GET", "/api/admin/guests"], ["GET", "/api/admin/traffic"], ["GET", "/api/admin/contacts"], ["DELETE", "/api/admin/contacts/ct_x"],
+  ["GET", "/api/admin/contacts/template"], ["PUT", "/api/admin/contacts/template"], ["POST", "/api/admin/contacts/template/preview"], ["POST", "/api/admin/contacts/ct_x/email"], ["GET", "/api/admin/concierge"], ["PUT", "/api/admin/concierge"],
   ["GET", "/api/admin/assistant"], ["PATCH", "/api/admin/assistant/prompt"], ["PATCH", "/api/admin/assistant/knowledge"], ["PATCH", "/api/admin/assistant/avatar"],
   ["GET", "/api/admin/email"], ["PUT", "/api/admin/email"], ["POST", "/api/admin/email/test"],
   ["GET", "/api/admin/sms"], ["PUT", "/api/admin/sms"], ["POST", "/api/admin/sms/test"],
@@ -710,9 +711,38 @@ describe("guest (no account)", () => {
     const mine = (await (await api(admin, "GET", "/api/admin/contacts")).json()).contacts.filter((c) => c.guestId === guestId);
     assert.equal(mine.length, 1, "one contact per guest session, updated");
     assert.deepEqual([mine[0].id, mine[0].email, mine[0].phone, mine[0].lang, mine[0].country], [id, "guest@example.com", "+15550100000", "en", "NL"]);
+    // The follow-up e-mail needs Telnyx Email (off in tests): nothing is sent or marked.
+    assert.equal((await api(guest, "POST", `/api/admin/contacts/${id}/email`)).status, 403);
+    assert.equal((await api(admin, "POST", `/api/admin/contacts/${id}/email`)).status, 409);
+    assert.equal((await api(admin, "POST", "/api/admin/contacts/ct_nope/email")).status, 404);
+    const after = (await (await api(admin, "GET", "/api/admin/contacts")).json()).contacts.find((c) => c.id === id);
+    assert.equal(after.emailed, undefined);
     assert.equal((await api(guest, "DELETE", `/api/admin/contacts/${id}`)).status, 403);
     assert.equal((await api(admin, "DELETE", `/api/admin/contacts/${id}`)).status, 200);
     assert.equal((await api(admin, "DELETE", `/api/admin/contacts/${id}`)).status, 404);
+  });
+});
+
+describe("follow-up e-mail template", () => {
+  let admin;
+  before(async () => { admin = (await login(ADMIN.email, ADMIN.password)).cookie; });
+
+  test("checked, saved, and rendered with everything escaped", async () => {
+    const res = await api(admin, "GET", "/api/admin/contacts/template");
+    assert.equal(res.status, 200);
+    const { template, defaults, email } = await res.json();
+    assert.deepEqual(template, defaults, "the default until one is saved");
+    assert.equal(email.enabled, false);
+
+    assert.equal((await api(admin, "PUT", "/api/admin/contacts/template", { ...template, subject: "" })).status, 400);
+    assert.equal((await api(admin, "PUT", "/api/admin/contacts/template", { ...template, buttonUrl: "javascript:alert(1)" })).status, 400);
+    const evil = { ...template, heading: '<script>x</script> for {{email}}', body: "Hi **there**\n\n<img src=x onerror=1>" };
+    const preview = await (await api(admin, "POST", "/api/admin/contacts/template/preview", evil)).json();
+    assert.ok(!preview.html.includes("<script>") && !preview.html.includes("<img"), "no HTML gets through");
+    assert.ok(preview.html.includes("<strong>there</strong>") && preview.html.includes("guest@example.com"));
+    const saved = await api(admin, "PUT", "/api/admin/contacts/template", { ...template, subject: "Hello {{country}}" });
+    assert.equal(saved.status, 200);
+    assert.equal((await (await api(admin, "GET", "/api/admin/contacts/template")).json()).template.subject, "Hello {{country}}");
   });
 });
 

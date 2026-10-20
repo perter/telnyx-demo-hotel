@@ -97,19 +97,53 @@
       </div>
     </section>
 
-    <section class="card flush" role="tabpanel" id="panel-contacts" aria-labelledby="tab-contacts" hidden>
-      <div class="card-head" style="padding:16px 18px 0">
-        <h2>Contacts left by guests</h2>
-        <button class="btn ghost small" id="contactsCsv" type="button" disabled>Download CSV</button>
-      </div>
-      <p class="muted hint" style="margin:6px 18px 12px">Guests who asked, from the pop-up on the booking page, to be contacted by Telnyx about TelnyxHotel, with their consent. Every contact kept is listed, whatever the period. Delete a contact when it has been handled or when the guest asks.</p>
-      <div class="table-wrap">
-        <table class="data">
-          <thead><tr><th>Left on</th><th>E-mail</th><th>Phone</th><th>Language</th><th>Country</th><th class="num">Calls</th><th>Got to</th><th></th></tr></thead>
-          <tbody id="contacts"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody>
-        </table>
-      </div>
-    </section>
+    <div role="tabpanel" id="panel-contacts" aria-labelledby="tab-contacts" class="tab-stack" hidden>
+      <section class="card flush">
+        <div class="card-head" style="padding:16px 18px 0">
+          <h2>Contacts left by guests</h2>
+          <div class="row-actions">
+            <button class="btn ghost small" id="templateBtn" type="button" aria-expanded="false" aria-controls="templateCard">Edit follow-up e-mail</button>
+            <button class="btn ghost small" id="contactsCsv" type="button" disabled>Download CSV</button>
+          </div>
+        </div>
+        <p class="muted hint" style="margin:6px 18px 4px">Guests who asked, from the pop-up on the booking page, to be contacted by Telnyx about TelnyxHotel, with their consent. Every contact kept is listed, whatever the period. <strong>Send e-mail</strong> sends them the follow-up e-mail below and marks the contact as e-mailed. Delete a contact when it has been handled or when the guest asks.</p>
+        <p class="muted hint" id="emailSetup" style="margin:0 18px 12px"></p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Left on</th><th>E-mail</th><th>Phone</th><th>Language</th><th>Country</th><th class="num">Calls</th><th>Got to</th><th>Follow-up</th><th></th></tr></thead>
+            <tbody id="contacts"><tr><td colspan="9" class="empty">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" id="templateCard" hidden>
+        <div class="card-head"><h2>Follow-up e-mail</h2><span class="muted hint">One template for every contact · <code>{{email}}</code> and <code>{{country}}</code> are filled in</span></div>
+        <div class="template-grid">
+          <form id="templateForm" autocomplete="off" class="template-form">
+            <label class="field">Sender name<input type="text" name="fromName" maxlength="80"></label>
+            <label class="field">Subject<input type="text" name="subject" maxlength="150" required></label>
+            <label class="field">Preview text <span class="muted hint">— shown next to the subject in the inbox</span><input type="text" name="preheader" maxlength="150"></label>
+            <label class="field">Heading<input type="text" name="heading" maxlength="120"></label>
+            <label class="field">Message <span class="muted hint">— a blank line starts a new paragraph; **bold**</span><textarea name="body" rows="10" maxlength="4000" required></textarea></label>
+            <div class="form-grid">
+              <label class="field">Button label<input type="text" name="buttonLabel" maxlength="40"></label>
+              <label class="field">Button link<input type="url" name="buttonUrl" maxlength="500" placeholder="https://"></label>
+            </div>
+            <label class="field">Signature<textarea name="signature" rows="2" maxlength="300"></textarea></label>
+            <div class="save-row">
+              <button class="btn" type="submit" id="templateSave">Save template</button>
+              <button class="btn ghost" type="button" id="templateReset">Restore the default</button>
+              <p class="form-error" id="templateError" role="alert"></p>
+              <p class="form-ok" id="templateOk" role="status"></p>
+            </div>
+          </form>
+          <div>
+            <div class="field-label">Preview · <span id="previewSubject"></span></div>
+            <iframe id="templatePreview" class="mail-preview" title="E-mail preview" sandbox></iframe>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <div role="tabpanel" id="panel-traffic" aria-labelledby="tab-traffic" class="tab-stack" hidden>
       <section class="card">

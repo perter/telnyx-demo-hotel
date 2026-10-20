@@ -1,6 +1,6 @@
 {
   "name": "telnyxhotel-voice-demo",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "TelnyxHotel: a multilingual AI voice receptionist demo built on Telnyx AI Assistants, Voice, Messaging, Email and Edge Compute.",
   "license": "MIT",
   "private": true,

@@ -22,6 +22,7 @@ import {
 import { openDb } from "./db.js";
 import { guestStats, initGuestStats } from "./guest-stats.js";
 import { deleteContact, initContacts, listContacts, parseContact, saveContact } from "./contacts.js";
+import { TEMPLATE_DEFAULTS, cleanTemplate, getTemplate, initContactEmail, renderEmail, saveTemplate, sendContactEmail } from "./contact-email.js";
 import { edgeTraffic, initEdgeMetrics } from "./edge-metrics.js";
 import { onEdge, setting } from "./settings.js";
 import { activeCallFor, createCallRecorder, deleteCall, getCall, initCalls, listCalls } from "./calls.js";
@@ -59,6 +60,7 @@ function startStorage() {
     initCalls(db);
     initGuestStats(db, { apiKey: API_KEY });
     initContacts(db);
+    initContactEmail(db);
     initConcierge(db);
     initEmail(db, { apiKey: API_KEY });
     initSms(db, { apiKey: API_KEY });
@@ -199,6 +201,22 @@ app.get("/api/admin/guests", requirePage("guests"), async (req, res) => {
 // Contacts left by guests from the booking page pop-up (admins: list, delete).
 app.get("/api/admin/contacts", requirePage("guests"), async (_req, res) => {
   try { res.json({ contacts: await listContacts() }); } catch (err) { sendError(res, err); }
+});
+// The follow-up e-mail: its template (with the Telnyx Email setup it uses), a preview, and sending it.
+app.get("/api/admin/contacts/template", requirePage("guests"), async (_req, res) => {
+  try {
+    const [template, s] = await Promise.all([getTemplate(), getEmailSettings()]);
+    res.json({ template, defaults: TEMPLATE_DEFAULTS, email: { enabled: s.enabled, from: s.from, sandbox: s.sandbox, overrideTo: s.overrideTo } });
+  } catch (err) { sendError(res, err); }
+});
+app.put("/api/admin/contacts/template", requirePage("guests"), async (req, res) => {
+  try { res.json({ template: await saveTemplate(req.body ?? {}) }); } catch (err) { sendError(res, err); }
+});
+app.post("/api/admin/contacts/template/preview", requirePage("guests"), (req, res) => {
+  try { res.json(renderEmail(cleanTemplate(req.body ?? {}))); } catch (err) { sendError(res, err); }
+});
+app.post("/api/admin/contacts/:id/email", requirePage("guests"), async (req, res) => {
+  try { res.json({ contact: await sendContactEmail(req.params.id, req.user) }); } catch (err) { sendError(res, err); }
 });
 app.delete("/api/admin/contacts/:id", requirePage("guests"), async (req, res) => {
   try { (await deleteContact(req.params.id)) ? res.json({ ok: true }) : res.status(404).json({ error: "Contact not found" }); } catch (err) { sendError(res, err); }
