@@ -21,6 +21,7 @@ import {
 } from "./auth.js";
 import { openDb } from "./db.js";
 import { guestStats, initGuestStats } from "./guest-stats.js";
+import { deleteContact, initContacts, listContacts, parseContact, saveContact } from "./contacts.js";
 import { edgeTraffic, initEdgeMetrics } from "./edge-metrics.js";
 import { onEdge, setting } from "./settings.js";
 import { activeCallFor, createCallRecorder, deleteCall, getCall, initCalls, listCalls } from "./calls.js";
@@ -57,6 +58,7 @@ function startStorage() {
     });
     initCalls(db);
     initGuestStats(db, { apiKey: API_KEY });
+    initContacts(db);
     initConcierge(db);
     initEmail(db, { apiKey: API_KEY });
     initSms(db, { apiKey: API_KEY });
@@ -193,6 +195,13 @@ app.get("/api/messages", requirePage("history"), async (req, res) => {
 app.get("/api/admin/guests", requirePage("guests"), async (req, res) => {
   const days = [1, 7, 30, 90, 0].includes(Number(req.query.days)) ? Number(req.query.days) : 30;
   try { res.json({ days, ...(await guestStats({ days })) }); } catch (err) { sendError(res, err); }
+});
+// Contacts left by guests from the booking page pop-up (admins: list, delete).
+app.get("/api/admin/contacts", requirePage("guests"), async (_req, res) => {
+  try { res.json({ contacts: await listContacts() }); } catch (err) { sendError(res, err); }
+});
+app.delete("/api/admin/contacts/:id", requirePage("guests"), async (req, res) => {
+  try { (await deleteContact(req.params.id)) ? res.json({ ok: true }) : res.status(404).json({ error: "Contact not found" }); } catch (err) { sendError(res, err); }
 });
 // Traffic of the Edge function (all requests, not calls), last 24 h or 7 days.
 app.get("/api/admin/traffic", requirePage("guests"), async (req, res) => {
@@ -457,6 +466,18 @@ function rateLimit(max, windowMs) {
 }
 const recapAllowed = rateLimit(5, 10 * 60_000);
 const smsAllowed = rateLimit(5, 10 * 60_000);
+
+// A guest asks to be contacted by Telnyx (the booking page pop-up).
+const contactAllowed = rateLimit(5, 10 * 60_000);
+app.post("/api/contact", requirePage("booking"), async (req, res) => {
+  if (!isGuest(req.user)) return res.status(403).json({ error: "Only for the guest demo" });
+  const { email, phone, consent, lang } = req.body ?? {};
+  try {
+    parseContact({ email, phone, consent }); // typos don't count against the limit
+    if (!contactAllowed(req.ip)) return res.status(429).json({ error: "Too many requests, try again later" });
+    res.json(await saveContact({ guestId: req.user.id, email, phone, consent, lang, ip: clientIp(req), country: clientWhere(req).country }));
+  } catch (err) { sendError(res, err); }
+});
 
 app.post("/api/booking-sms", requirePage("booking"), async (req, res) => {
   const { booking, code, lang } = req.body ?? {};

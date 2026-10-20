@@ -46,6 +46,8 @@ const GUEST_NOT_SENT = "guest demo: nothing is sent. Tell the guest that with a 
 const flowChannel = "BroadcastChannel" in window ? new BroadcastChannel("telnyxhotel-flow") : null;
 function emitFlow(type, detail = {}) {
   try { flowChannel?.postMessage({ type, detail, at: Date.now() }); } catch { /* ignore */ }
+  // Same page: the contact pop-up (contact.js) waits for calls to end.
+  if (type === "call_start" || type === "call_end") document.dispatchEvent(new CustomEvent(`concierge:${type}`));
 }
 
 // ============================================================

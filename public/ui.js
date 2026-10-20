@@ -3,7 +3,7 @@
 // branch versions. Back-office help is English; the booking and flow pages
 // take theirs from the i18n files (help.* keys), so it follows the page language.
 (function () {
-  const FRONTEND_VERSION = "1.2.0";
+  const FRONTEND_VERSION = "1.3.0";
   const PAGE = { "/": "booking", "/index.html": "booking", "/flow.html": "flow", "/history.html": "history", "/admin.html": "admin", "/guests.html": "guests",
     "/assistant.html": "assistant", "/email.html": "email", "/sms.html": "sms", "/login.html": "login" }[location.pathname] || "noaccess";
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -57,6 +57,7 @@
       ["Insights", "Summary, Sentiment and Missed Opportunities are the Telnyx conversation insights of the assistant's insight group, read back for each call a minute or so after it ends. The sentiment score (0–1) and the yes/no of a missed opportunity are read from their text."],
       ["Traffic", "Requests served by the app's Telnyx Edge function, by outcome, with latency and memory, from the Edge Compute metrics (kept 7 days). These are requests, not calls or guests. The split by Edge region is only in the Telnyx Portal."],
       ["Where", "Calls by country, worked out on the server from DB-IP country data. The map shades countries by their share of calls. Older calls have no country."],
+      ["Contacts", "Guests who left an e-mail or phone number in the pop-up on the booking page, asking to be contacted by Telnyx about TelnyxHotel. Each comes with how far that guest's calls got. Download them as CSV, and delete a contact once handled or when the guest asks."],
     ],
     assistant: [
       ["Concierge languages & voices", "Enable the languages guests can choose and, per language, a shortlist of Telnyx Ultra voices with a default and a greeting. Guests can only start a call with a voice from these lists; each user's pick is remembered in a cookie."],

@@ -308,6 +308,53 @@ async function loadTraffic() {
 }
 let trafficShown = null; // the period the Traffic tab was loaded for
 
+// Contacts tab: guests who left an e-mail or phone number (all kept, not per period).
+const LANG_NAME = { en: "English", fr: "French", de: "German", it: "Italian", es: "Spanish", nl: "Dutch" };
+let contacts = [];
+function contactsTable() {
+  $("contactsCount").textContent = contacts.length ? `(${contacts.length})` : "";
+  $("contactsCsv").disabled = !contacts.length;
+  if (!contacts.length) { $("contacts").innerHTML = '<tr><td colspan="8" class="empty">No guest has left a contact yet.</td></tr>'; return; }
+  $("contacts").innerHTML = contacts.map((c) => `<tr>
+    <td style="white-space:nowrap">${esc(new Date(c.createdAt).toLocaleString())}</td>
+    <td>${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '<span class="muted">—</span>'}</td>
+    <td style="white-space:nowrap">${c.phone ? `<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>` : '<span class="muted">—</span>'}</td>
+    <td>${esc(LANG_NAME[c.lang] || c.lang)}</td>
+    <td>${c.country ? esc(countryName(c.country)) : '<span class="muted">—</span>'}</td>
+    <td class="num">${esc(c.calls)}</td>
+    <td>${c.stage ? `<span class="chip${c.stage === "booked" ? " ok" : ""}">${esc(STAGE_LABEL[c.stage])}</span>` : '<span class="muted">No call</span>'}</td>
+    <td><button class="btn danger small" type="button" data-delete="${esc(c.id)}">Delete</button></td>
+  </tr>`).join("");
+}
+async function loadContacts() {
+  try {
+    contacts = (await api("GET", "/api/admin/contacts")).contacts;
+    contactsTable();
+  } catch (err) {
+    $("contacts").innerHTML = `<tr><td colspan="8" class="empty form-error">${esc(err.message)}</td></tr>`;
+  }
+}
+$("contacts").addEventListener("click", async (e) => {
+  const id = e.target.closest("[data-delete]")?.dataset.delete;
+  const c = contacts.find((x) => x.id === id);
+  if (!c || !confirm(`Delete the contact ${c.email || c.phone}?`)) return;
+  try {
+    await api("DELETE", `/api/admin/contacts/${encodeURIComponent(id)}`);
+    contacts = contacts.filter((x) => x.id !== id);
+    contactsTable();
+  } catch (err) { alert(err.message); }
+});
+$("contactsCsv").onclick = () => {
+  const cell = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
+  const rows = [["Left on", "E-mail", "Phone", "Language", "Country", "Calls", "Got to"],
+    ...contacts.map((c) => [c.createdAt, c.email, c.phone, LANG_NAME[c.lang] || c.lang, c.country ? countryName(c.country) : "", c.calls, c.stage ? STAGE_LABEL[c.stage] : ""])];
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([rows.map((r) => r.map(cell).join(",")).join("\r\n")], { type: "text/csv" }));
+  a.download = `telnyxhotel-contacts-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
 let STAGES = [];
 async function load() {
   $("error").textContent = "";
@@ -364,8 +411,10 @@ addEventListener("hashchange", () => showTab(location.hash.slice(1)));
 const reload = () => {
   trafficShown = null;
   load();
+  loadContacts();
   if (!$("panel-traffic").hidden) showTab("traffic");
 };
 $("days").onchange = reload;
 $("refreshBtn").onclick = reload;
 load();
+loadContacts();

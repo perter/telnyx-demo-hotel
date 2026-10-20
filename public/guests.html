@@ -39,6 +39,7 @@
       <button type="button" role="tab" id="tab-where" aria-controls="panel-where" data-tab="where">Where</button>
       <button type="button" role="tab" id="tab-insights" aria-controls="panel-insights" data-tab="insights">Insights</button>
       <button type="button" role="tab" id="tab-calls" aria-controls="panel-calls" data-tab="calls">Calls</button>
+      <button type="button" role="tab" id="tab-contacts" aria-controls="panel-contacts" data-tab="contacts">Contacts <span class="muted" id="contactsCount"></span></button>
       <button type="button" role="tab" id="tab-traffic" aria-controls="panel-traffic" data-tab="traffic">Traffic</button>
     </nav>
 
@@ -92,6 +93,20 @@
         <table class="data">
           <thead><tr><th>Started</th><th class="num">Duration</th><th>Got to</th><th>Ended by</th><th>Country</th><th>Sentiment</th><th>Summary</th></tr></thead>
           <tbody id="calls"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card flush" role="tabpanel" id="panel-contacts" aria-labelledby="tab-contacts" hidden>
+      <div class="card-head" style="padding:16px 18px 0">
+        <h2>Contacts left by guests</h2>
+        <button class="btn ghost small" id="contactsCsv" type="button" disabled>Download CSV</button>
+      </div>
+      <p class="muted hint" style="margin:6px 18px 12px">Guests who asked, from the pop-up on the booking page, to be contacted by Telnyx about TelnyxHotel, with their consent. Every contact kept is listed, whatever the period. Delete a contact when it has been handled or when the guest asks.</p>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Left on</th><th>E-mail</th><th>Phone</th><th>Language</th><th>Country</th><th class="num">Calls</th><th>Got to</th><th></th></tr></thead>
+          <tbody id="contacts"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody>
         </table>
       </div>
     </section>

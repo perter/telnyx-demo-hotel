@@ -169,15 +169,8 @@ async function pool(items, fn) {
   }));
 }
 
-// ---------------------------------------------------------------------------
-// days: 0 for everything kept, otherwise the last N days.
-export async function guestStats({ days = 30 } = {}) {
-  const since = days > 0 ? new Date(Date.now() - days * 864e5).toISOString() : "";
-  const { results } = await db.prepare(
-    "SELECT id FROM calls WHERE user_id LIKE 'g\\_%' ESCAPE '\\' AND started_at >= ? ORDER BY started_at DESC LIMIT ?",
-  ).bind(since, MAX_CALLS).all();
-  const ids = results.map((r) => r.id);
-
+// The facts of these calls, in the same order (unreadable ones left out).
+async function factsFor(ids) {
   const missing = ids.filter((id) => !facts.has(id));
   for (let i = 0; i < missing.length; i += 20) {
     const chunk = missing.slice(i, i + 20);
@@ -186,7 +179,36 @@ export async function guestStats({ days = 30 } = {}) {
       try { const f = factsOf(unpackCall(r.data)); facts.set(f.id, f); } catch (err) { console.error("guest stats: unreadable call:", err.message); }
     }
   }
-  const calls = ids.map((id) => facts.get(id)).filter(Boolean);
+  return ids.map((id) => facts.get(id)).filter(Boolean);
+}
+
+// For the Contacts tab: each guest's calls, and the furthest any of them got.
+export async function guestJourneys(guestIds) {
+  const out = new Map();
+  const ids = [];
+  for (let i = 0; i < guestIds.length; i += 50) {
+    const chunk = guestIds.slice(i, i + 50);
+    const { results } = await db.prepare(`SELECT id FROM calls WHERE user_id IN (${chunk.map(() => "?").join(",")})`).bind(...chunk).all();
+    ids.push(...results.map((r) => r.id));
+  }
+  for (const c of await factsFor(ids)) {
+    const j = out.get(c.guestId) || { calls: 0, stage: null };
+    j.calls++;
+    if (STAGES.indexOf(c.stage) > STAGES.indexOf(j.stage)) j.stage = c.stage;
+    out.set(c.guestId, j);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// days: 0 for everything kept, otherwise the last N days.
+export async function guestStats({ days = 30 } = {}) {
+  const since = days > 0 ? new Date(Date.now() - days * 864e5).toISOString() : "";
+  const { results } = await db.prepare(
+    "SELECT id FROM calls WHERE user_id LIKE 'g\\_%' ESCAPE '\\' AND started_at >= ? ORDER BY started_at DESC LIMIT ?",
+  ).bind(since, MAX_CALLS).all();
+  const ids = results.map((r) => r.id);
+  const calls = await factsFor(ids);
 
   let insightsError = null;
   const withInsights = new Map();
