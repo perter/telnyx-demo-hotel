@@ -308,13 +308,25 @@ async function loadTraffic() {
 }
 let trafficShown = null; // the period the Traffic tab was loaded for
 
-// Contacts tab: guests who left an e-mail or phone number (all kept, not per period).
+// Contacts tab: guests who left an e-mail or phone number (all kept, not per
+// period), and the follow-up e-mail sent to them (template edited here).
 const LANG_NAME = { en: "English", fr: "French", de: "German", it: "Italian", es: "Spanish", nl: "Dutch" };
 let contacts = [];
+let emailSetup = null; // { enabled, from, sandbox, overrideTo } of /email.html
+const day = (iso) => new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+
+function followUp(c) {
+  const e = c.emailed;
+  if (!e) return '<span class="muted">Not sent</span>';
+  const title = `Sent ${new Date(e.at).toLocaleString()} by ${e.by}${e.redirected ? ` (redirected to ${e.to})` : ""}${c.emailCount > 1 ? ` · ${c.emailCount} e-mails in all` : ""}`;
+  return `<span class="chip${e.sandbox ? " warn" : " ok"}" title="${esc(title)}">${e.sandbox ? "Sandbox" : "Sent"} ${esc(day(e.at))}${c.emailCount > 1 ? ` ×${esc(c.emailCount)}` : ""}</span>`;
+}
+
 function contactsTable() {
   $("contactsCount").textContent = contacts.length ? `(${contacts.length})` : "";
   $("contactsCsv").disabled = !contacts.length;
-  if (!contacts.length) { $("contacts").innerHTML = '<tr><td colspan="8" class="empty">No guest has left a contact yet.</td></tr>'; return; }
+  if (!contacts.length) { $("contacts").innerHTML = '<tr><td colspan="9" class="empty">No guest has left a contact yet.</td></tr>'; return; }
+  const canSend = emailSetup?.enabled;
   $("contacts").innerHTML = contacts.map((c) => `<tr>
     <td style="white-space:nowrap">${esc(new Date(c.createdAt).toLocaleString())}</td>
     <td>${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '<span class="muted">—</span>'}</td>
@@ -323,18 +335,49 @@ function contactsTable() {
     <td>${c.country ? esc(countryName(c.country)) : '<span class="muted">—</span>'}</td>
     <td class="num">${esc(c.calls)}</td>
     <td>${c.stage ? `<span class="chip${c.stage === "booked" ? " ok" : ""}">${esc(STAGE_LABEL[c.stage])}</span>` : '<span class="muted">No call</span>'}</td>
-    <td><button class="btn danger small" type="button" data-delete="${esc(c.id)}">Delete</button></td>
+    <td>${c.email ? followUp(c) : '<span class="muted">No e-mail</span>'}</td>
+    <td><div class="row-actions">
+      ${c.email ? `<button class="btn small" type="button" data-send="${esc(c.id)}"${canSend ? "" : ' disabled title="Turn on Telnyx Email in E-mail first"'}>${c.emailed ? "Send again" : "Send e-mail"}</button>` : ""}
+      <button class="btn danger small" type="button" data-delete="${esc(c.id)}">Delete</button>
+    </div></td>
   </tr>`).join("");
 }
+
+function setupNote() {
+  const s = emailSetup;
+  $("emailSetup").innerHTML = !s ? ""
+    : !s.enabled ? 'Telnyx Email is off, so follow-up e-mails can\'t be sent: turn it on in <a href="/email.html">E-mail</a>.'
+    : `Sent with Telnyx Email from <strong>${esc(s.from)}</strong>${s.sandbox ? ' · <span class="chip warn">sandbox: nothing is delivered</span>' : ""}${s.overrideTo ? ` · every e-mail goes to <strong>${esc(s.overrideTo)}</strong> instead (see <a href="/email.html">E-mail</a>)` : ""}.`;
+}
+
 async function loadContacts() {
   try {
-    contacts = (await api("GET", "/api/admin/contacts")).contacts;
+    const [list, tpl] = await Promise.all([api("GET", "/api/admin/contacts"), api("GET", "/api/admin/contacts/template")]);
+    contacts = list.contacts;
+    emailSetup = tpl.email;
+    templateDefaults = tpl.defaults;
+    if (!templateDirty) fillTemplate(tpl.template);
+    setupNote();
     contactsTable();
   } catch (err) {
-    $("contacts").innerHTML = `<tr><td colspan="8" class="empty form-error">${esc(err.message)}</td></tr>`;
+    $("contacts").innerHTML = `<tr><td colspan="9" class="empty form-error">${esc(err.message)}</td></tr>`;
   }
 }
 $("contacts").addEventListener("click", async (e) => {
+  const send = e.target.closest("[data-send]");
+  if (send) {
+    const c = contacts.find((x) => x.id === send.dataset.send);
+    const to = emailSetup?.overrideTo || c.email;
+    if (!confirm(`Send the follow-up e-mail to ${to}${to !== c.email ? ` (redirect for ${c.email})` : ""}?${templateDirty ? "\n\nThe template has unsaved changes: the saved version is sent." : ""}`)) return;
+    send.disabled = true;
+    send.textContent = "Sending…";
+    try {
+      const { contact } = await api("POST", `/api/admin/contacts/${encodeURIComponent(c.id)}/email`);
+      contacts = contacts.map((x) => (x.id === c.id ? { ...x, ...contact } : x));
+    } catch (err) { alert(`Not sent: ${err.message}`); }
+    contactsTable();
+    return;
+  }
   const id = e.target.closest("[data-delete]")?.dataset.delete;
   const c = contacts.find((x) => x.id === id);
   if (!c || !confirm(`Delete the contact ${c.email || c.phone}?`)) return;
@@ -346,13 +389,57 @@ $("contacts").addEventListener("click", async (e) => {
 });
 $("contactsCsv").onclick = () => {
   const cell = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
-  const rows = [["Left on", "E-mail", "Phone", "Language", "Country", "Calls", "Got to"],
-    ...contacts.map((c) => [c.createdAt, c.email, c.phone, LANG_NAME[c.lang] || c.lang, c.country ? countryName(c.country) : "", c.calls, c.stage ? STAGE_LABEL[c.stage] : ""])];
+  const rows = [["Left on", "E-mail", "Phone", "Language", "Country", "Calls", "Got to", "Follow-up sent"],
+    ...contacts.map((c) => [c.createdAt, c.email, c.phone, LANG_NAME[c.lang] || c.lang, c.country ? countryName(c.country) : "", c.calls, c.stage ? STAGE_LABEL[c.stage] : "", c.emailed?.at || ""])];
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([rows.map((r) => r.map(cell).join(",")).join("\r\n")], { type: "text/csv" }));
   a.download = `telnyxhotel-contacts-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(a.href);
+};
+
+// The follow-up e-mail template, with a live preview rendered by the server.
+const tform = $("templateForm");
+let templateDefaults = null, templateDirty = false, previewTimer = null;
+function fillTemplate(t) {
+  for (const [k, v] of Object.entries(t)) if (tform.elements[k]) tform.elements[k].value = v;
+  templateDirty = false;
+  preview();
+}
+const templateValues = () => Object.fromEntries([...tform.elements].filter((el) => el.name).map((el) => [el.name, el.value]));
+async function preview() {
+  try {
+    const r = await api("POST", "/api/admin/contacts/template/preview", templateValues());
+    $("templatePreview").srcdoc = r.html;
+    $("previewSubject").textContent = r.subject;
+    $("templateError").textContent = "";
+  } catch (err) { $("templateError").textContent = err.message; }
+}
+tform.addEventListener("input", () => {
+  templateDirty = true;
+  $("templateOk").textContent = "";
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(preview, 400);
+});
+tform.onsubmit = async (e) => {
+  e.preventDefault();
+  $("templateSave").disabled = true;
+  try {
+    fillTemplate((await api("PUT", "/api/admin/contacts/template", templateValues())).template);
+    $("templateOk").textContent = "Saved. New follow-up e-mails use this version.";
+  } catch (err) { $("templateError").textContent = err.message; }
+  $("templateSave").disabled = false;
+};
+$("templateReset").onclick = () => {
+  if (!templateDefaults || !confirm("Replace the fields with the default template? Nothing is saved until you press Save.")) return;
+  fillTemplate(templateDefaults);
+  templateDirty = true;
+};
+$("templateBtn").onclick = () => {
+  const open = $("templateCard").hidden;
+  $("templateCard").hidden = !open;
+  $("templateBtn").setAttribute("aria-expanded", String(open));
+  if (open) $("templateCard").scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 let STAGES = [];

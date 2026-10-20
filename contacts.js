@@ -1,8 +1,8 @@
 // Contact requests: a guest (no account) can leave an e-mail address and/or a
 // phone number, with their consent, to be contacted by Telnyx about the demo
 // (the pop-up on the booking page). One record per guest session: leaving
-// details again updates it. Admins see them in Guest stats → Contacts and can
-// delete them.
+// details again updates it. Admins see them in Guest stats → Contacts, can
+// send them the follow-up e-mail (contact-email.js) and delete them.
 import crypto from "node:crypto";
 
 import { countryOf } from "./geo.js";
@@ -71,6 +71,20 @@ export async function listContacts() {
   const contacts = results.map((r) => JSON.parse(r.data));
   const journeys = await guestJourneys([...new Set(contacts.map((c) => c.guestId))]);
   return contacts.map((c) => ({ ...c, calls: journeys.get(c.guestId)?.calls ?? 0, stage: journeys.get(c.guestId)?.stage ?? null }));
+}
+
+export async function getContact(id) {
+  const row = await db.prepare("SELECT data FROM contacts WHERE id = ?").bind(String(id)).first();
+  return row ? JSON.parse(row.data) : null;
+}
+
+// Records a follow-up e-mail on the contact (the last one, and how many).
+export async function markEmailed(id, sent) {
+  const c = await getContact(id);
+  if (!c) return null;
+  const data = { ...c, emailed: sent, emailCount: (c.emailCount || 0) + 1 };
+  await db.prepare("UPDATE contacts SET data = ? WHERE id = ?").bind(JSON.stringify(data), c.id).run();
+  return data;
 }
 
 export async function deleteContact(id) {

@@ -294,3 +294,9 @@ table.data.compact td, table.data.compact th { padding: 6px 10px; }
 .map-legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 6px; }
 .map-scale { width: 120px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--tx-green-ink) 25%, var(--surface-2)), var(--tx-green-ink)); }
 @media (max-width: 860px) { .where-grid { grid-template-columns: 1fr; } }
+
+/* Guest stats → Contacts: follow-up e-mail template */
+.template-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+.template-form { display: grid; gap: 12px; }
+.mail-preview { width: 100%; height: 800px; border: 1px solid var(--line); border-radius: 10px; background: #eef1ee; }
+@media (max-width: 900px) { .template-grid { grid-template-columns: 1fr; } .mail-preview { height: 560px; } }
