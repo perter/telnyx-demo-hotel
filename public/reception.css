@@ -355,10 +355,42 @@ a { color: inherit; }
   .launcher { padding: 12px; right: 16px; }
   .concierge { right: 0; bottom: 0; width: 100vw; max-height: 88vh; max-height: 88dvh; padding-bottom: env(safe-area-inset-bottom, 0px); }
 }
+/* ---------- Contact pop-up (contact.js, guest demo) ---------- */
+.contact-pop {
+  position: fixed; z-index: 45; left: 16px; bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  width: min(340px, calc(100vw - 32px)); padding: 22px 22px 20px; background: #fff; color: var(--ink);
+  border-left: 4px solid var(--sage); box-shadow: 0 24px 60px rgba(30,40,42,0.3);
+  opacity: 0; transform: translateX(calc(-100% - 24px));
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.55s ease;
+}
+.contact-pop.open { opacity: 1; transform: none; }
+.contact-pop h3 { font-family: var(--serif); font-weight: 400; font-size: 1.35rem; margin: 0 24px 6px 0; color: var(--slate); }
+.contact-pop > p { font-size: 0.9rem; font-weight: 300; line-height: 1.5; margin-bottom: 14px; }
+.contact-close {
+  position: absolute; top: 8px; right: 10px; width: 32px; height: 32px; border: 0; background: none;
+  font-size: 1.4rem; line-height: 1; color: var(--muted); cursor: pointer;
+}
+.contact-close:hover { color: var(--ink); }
+.contact-pop form { display: grid; gap: 8px; }
+.contact-pop label > span { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.contact-pop input[type=email], .contact-pop input[type=tel] {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); font: inherit; font-size: 0.95rem; background: var(--cream);
+}
+.contact-pop input:focus { outline: 2px solid var(--sage); outline-offset: -1px; }
+.contact-or { font-size: 0.78rem; color: var(--muted); text-align: center; text-transform: lowercase; }
+.contact-pop .contact-consent { display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem; line-height: 1.4; margin-top: 4px; cursor: pointer; }
+.contact-pop .contact-consent span { display: inline; font-size: inherit; letter-spacing: 0; text-transform: none; color: var(--ink); margin: 0; }
+.contact-consent input { margin-top: 2px; accent-color: var(--slate); }
+.contact-error { color: var(--red); font-size: 0.82rem; min-height: 1em; }
+.contact-error:empty { display: none; }
+.contact-pop .btn { margin-top: 4px; }
+.contact-thanks { color: var(--ok); font-size: 0.95rem; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .pulse-dot, .launcher.live .launcher-icon { animation: none; }
   .lang-badge .flag-stack .flag, .lang-badge .lang-names span { transition-duration: 0.01s; }
+  .contact-pop { transform: none; transition-property: opacity; }
 }
 
 /* Account menu (account.js), bottom-left */

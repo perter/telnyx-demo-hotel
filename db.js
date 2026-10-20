@@ -32,7 +32,13 @@ CREATE TABLE IF NOT EXISTS sms_messages (
   created_at TEXT NOT NULL,
   data       TEXT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS sms_by_created ON sms_messages(created_at DESC);`;
+CREATE INDEX IF NOT EXISTS sms_by_created ON sms_messages(created_at DESC);
+CREATE TABLE IF NOT EXISTS contacts (
+  id         TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL,
+  data       TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS contacts_by_created ON contacts(created_at DESC);`;
 
 const statements = (sql) => sql.split(";").map((s) => s.trim()).filter(Boolean);
 

@@ -101,7 +101,7 @@ const PAGES = ["/", "/index.html", "/flow.html", "/history.html", "/admin.html",
 const ADMIN_PAGES = ["/admin.html", "/guests.html", "/assistant.html", "/email.html", "/sms.html"];
 const ADMIN_APIS = [
   ["GET", "/api/admin/users"], ["POST", "/api/admin/users"], ["PATCH", "/api/admin/users/u_x"], ["DELETE", "/api/admin/users/u_x"],
-  ["GET", "/api/admin/guests"], ["GET", "/api/admin/traffic"], ["GET", "/api/admin/concierge"], ["PUT", "/api/admin/concierge"],
+  ["GET", "/api/admin/guests"], ["GET", "/api/admin/traffic"], ["GET", "/api/admin/contacts"], ["DELETE", "/api/admin/contacts/ct_x"], ["GET", "/api/admin/concierge"], ["PUT", "/api/admin/concierge"],
   ["GET", "/api/admin/assistant"], ["PATCH", "/api/admin/assistant/prompt"], ["PATCH", "/api/admin/assistant/knowledge"], ["PATCH", "/api/admin/assistant/avatar"],
   ["GET", "/api/admin/email"], ["PUT", "/api/admin/email"], ["POST", "/api/admin/email/test"],
   ["GET", "/api/admin/sms"], ["PUT", "/api/admin/sms"], ["POST", "/api/admin/sms/test"],
@@ -111,7 +111,7 @@ const APIS = [
   ["GET", "/api/auth/me"], ["POST", "/api/auth/password"],
   ["GET", "/api/calls"], ["GET", "/api/calls/c_x"], ["DELETE", "/api/calls/c_x"], ["GET", "/api/messages"],
   ["GET", "/api/concierge"], ["GET", "/api/prefs"], ["PUT", "/api/prefs"], ["POST", "/api/tts"],
-  ["POST", "/api/booking-recap"], ["GET", "/recap/x"], ["POST", "/api/booking-sms"],
+  ["POST", "/api/booking-recap"], ["GET", "/recap/x"], ["POST", "/api/booking-sms"], ["POST", "/api/contact"],
   ...ADMIN_APIS,
 ];
 const day = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
@@ -690,6 +690,29 @@ describe("guest (no account)", () => {
     assert.equal(call.country, "IT", "without a public IP, the platform's country header");
     assert.equal((await api(guest, "GET", "/api/admin/guests")).status, 403);
     await api(admin, "DELETE", `/api/calls/${call.id}`);
+  });
+
+  test("contact pop-up: guests only, validated, listed for admins who can delete it", async () => {
+    const send = (cookie, body, headers) => fetch(`${BASE}/api/contact`, {
+      method: "POST", headers: { Cookie: cookie, "Content-Type": "application/json", ...headers }, body: JSON.stringify(body),
+    });
+    assert.equal((await send(admin, { email: "a@example.com", consent: true })).status, 403, "accounts don't use the pop-up");
+    assert.equal((await send(guest, { consent: true })).status, 400, "an e-mail or a phone is needed");
+    assert.equal((await send(guest, { email: "a@example.com" })).status, 400, "consent is needed");
+    assert.equal((await send(guest, { email: "not-an-email", consent: true })).status, 400);
+    assert.equal((await send(guest, { phone: "call me", consent: true })).status, 400);
+    assert.equal((await send(guest, { email: "first@example.com", consent: true })).status, 200);
+    const res = await send(guest, { email: " Guest@Example.com ", phone: "+1 (555) 010-0000", consent: true, lang: "xx" }, { "CF-IPCountry": "nl" });
+    assert.equal(res.status, 200);
+    const { id } = await res.json();
+
+    assert.equal((await api(guest, "GET", "/api/admin/contacts")).status, 403);
+    const mine = (await (await api(admin, "GET", "/api/admin/contacts")).json()).contacts.filter((c) => c.guestId === guestId);
+    assert.equal(mine.length, 1, "one contact per guest session, updated");
+    assert.deepEqual([mine[0].id, mine[0].email, mine[0].phone, mine[0].lang, mine[0].country], [id, "guest@example.com", "+15550100000", "en", "NL"]);
+    assert.equal((await api(guest, "DELETE", `/api/admin/contacts/${id}`)).status, 403);
+    assert.equal((await api(admin, "DELETE", `/api/admin/contacts/${id}`)).status, 200);
+    assert.equal((await api(admin, "DELETE", `/api/admin/contacts/${id}`)).status, 404);
   });
 });
 
