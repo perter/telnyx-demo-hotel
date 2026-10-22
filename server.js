@@ -77,7 +77,7 @@ const TELNYX = "https://api.telnyx.com/v2";
 const TELNYX_WS = "wss://api.telnyx.com/v2";
 const authHeaders = { Authorization: `Bearer ${API_KEY}` };
 initAssistantAdmin({ apiKey: API_KEY, id: ASSISTANT_ID });
-initEdgeMetrics({ apiKey: API_KEY, functionName: setting("EDGE_FUNCTION") });
+initEdgeMetrics({ apiKey: setting("EDGE_API_KEY") || API_KEY, functionName: setting("EDGE_FUNCTION") });
 
 const app = express();
 app.disable("x-powered-by");

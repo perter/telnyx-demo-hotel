@@ -109,6 +109,7 @@ flowchart LR
 | `SESSION_SECRET` | Signs session cookies. |
 | `GUEST_ACCESS` | `off` removes guest access (on by default). |
 | `FRAME_ANCESTORS` | Optional comma-separated exact HTTPS origins allowed to embed the app; denied by default. Original sign-in and permissions still apply. |
+| `EDGE_API_KEY` | Optional hosting-account key for traffic metrics; defaults to the assistant/messaging key. |
 | `EDGE_FUNCTION` | Edge function whose traffic Guest stats shows (default `telnyxhotel-concierge`). |
 | `PORT`, `DATA_DIR` | HTTP port (3000), SQLite location (`./data`). |
 | `SQLDB_ID` | Telnyx Edge SQL database (instead of SQLite). |
